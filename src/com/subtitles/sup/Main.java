@@ -48,7 +48,7 @@ public class Main {
             }
         }
         try {
-            ImageIO.write(image, "png", new File("org.png"));
+            ImageIO.write(image, "png", new File("org1.png"));
         } catch (IOException ex) {
             System.out.println(ex.getLocalizedMessage());
         }
