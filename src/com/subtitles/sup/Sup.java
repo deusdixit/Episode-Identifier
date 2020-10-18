@@ -3,11 +3,18 @@ package com.subtitles.sup;
 import com.google.gson.Gson;
 import com.subtitles.sup.model.*;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Sup {
 
@@ -15,6 +22,7 @@ public class Sup {
     private final int endSequenceId = 0x80;
     private byte[] data;
     private PGS[] segments = null;
+    private Map<Integer, BufferedImage> allImages;
 
     public Sup(Path filePath) {
         try {
@@ -31,13 +39,33 @@ public class Sup {
         return segments;
     }
 
-    public void toJson(Path filepath) {
+    public void toJson(String filename) {
+        Path filepath = Paths.get(filename + ".json");
         if (segments == null) {
             parse();
         }
         Gson gson = new Gson();
-        String json = gson.toJson(segments);
+
         try {
+
+            //String[] keys = allImages.keySet().toArray(new String[0]);
+            File folder = new File(filename + "_images");
+            if (!folder.exists()) {
+                if (!folder.mkdir()) {
+                    System.out.println("Couldn't create new folder for image files...");
+                    System.exit(1);
+                }
+            }
+            for (PGS segment : segments) {
+                if (segment instanceof ODS && allImages.containsKey(segment.presentationTimestamp)) {
+
+                    BufferedImage image = allImages.get(segment.presentationTimestamp);
+                    ImageIO.write(image, "png", new File(filename + "_images/" + segment.presentationTimestamp + ".png"));
+                    ((ODS) segment).objectDataPath = filename + "_images/" + segment.presentationTimestamp + ".png";
+                }
+
+            }
+            String json = gson.toJson(segments);
             Files.write(filepath, json.getBytes());
         } catch (IOException ioex) {
             System.out.println("IOException while writing json...");
@@ -47,6 +75,7 @@ public class Sup {
 
     public void parse() {
         List<PGS> objs = new ArrayList<>();
+        allImages = new TreeMap<>();
         for (int i = 0; i < data.length - 1; i++) {
             if (magicNumber == ((data[i] & 0xff) << 8 | data[i + 1] & 0xff)) {
                 PGS obj = pgs(i + 2);
@@ -367,8 +396,79 @@ public class Sup {
 
         result.height = readNBytes(index, 2);
 
+        index += 2;
+        BufferedImage image = getImages(index, result.objectDataLength, result.width, result.height);
+        allImages.put(result.presentationTimestamp, image);
+/*        try {
+            ImageIO.write(image, "png", new File("bild.png"));
+        } catch(IOException ex) {
+            System.out.println(ex.getMessage());
+        }*/
         return result;
 
+    }
+
+
+    private BufferedImage getImages(int index, int length, int width, int height) {
+        BufferedImage result = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_ARGB);
+        int[] xy = new int[]{0, 0};
+        int counter = 0;
+        for (int i = 0; i < length; ) {
+            int begin = readNBytes(index + i, 1);
+            i++;
+            if (begin == 0) {
+                int snd = readNBytes(i + index, 1);
+                i++;
+
+                if (snd == 0) {
+                    //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                    xy[0] = 0;
+                    xy[1]++;
+                } else if (nthBit(snd, 7) == 1 && nthBit(snd, 6) == 1) {
+                    int anzahl = readNBytes(index + i - 1, 2) - 16384 - 32768;
+                    i++;
+                    int col = readNBytes(index + i, 1);
+                    i++;
+                    for (int j = 0; j < anzahl; j++) {
+                        Color c = new Color(col, col, col);
+                        result.setRGB(xy[0], xy[1], c.getRGB());
+                        //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                        xy[0] = (xy[0] + 1) % (width + 1);
+                    }
+                } else if (nthBit(snd, 6) == 1) {
+                    int anzahl = readNBytes(index + i - 1, 2) - 16384;
+                    i++;
+                    for (int j = 0; j < anzahl; j++) {
+                        Color c = new Color(0, 0, 0);
+                        result.setRGB(xy[0], xy[1], c.getRGB());
+                        //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                        xy[0] = (xy[0] + 1) % (width + 1);
+                    }
+                } else if (nthBit(snd, 7) == 1) {
+                    int col = readNBytes(index + i, 1);
+                    i++;
+                    for (int j = 0; j < snd - 128; j++) {
+                        Color c = new Color(col, col, col);
+                        //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                        result.setRGB(xy[0], xy[1], c.getRGB());
+                        xy[0] = (xy[0] + 1) % (width + 1);
+                    }
+                } else {
+                    for (int j = 0; j < snd; j++) {
+                        Color c = new Color(0, 0, 0);
+                        result.setRGB(xy[0], xy[1], c.getRGB());
+                        //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                        xy[0] = (xy[0] + 1) % (width + 1);
+                    }
+                }
+            } else {
+                Color c = new Color(begin, begin, begin);
+                result.setRGB(xy[0], xy[1], c.getRGB());
+                //System.out.println("x : " + xy[0] + " y : " + xy[1] + " --- " + width + " : " + height);
+                xy[0] = (xy[0] + 1) % (width + 1);
+            }
+        }
+        return result;
     }
 
     private END end(int index, PGS obj) {
@@ -385,6 +485,25 @@ public class Sup {
         for (int i = n - 1; i >= 0; i--) {
             result |= (data[index + counter++] & 0xff) << (i * 8);
         }
+        return result;
+    }
+
+    private int bytesToInt(byte[] b) {
+        int result = 0;
+        int counter = 0;
+        for (int i = b.length - 1; i >= 0; i--) {
+            result |= (b[counter++] & 0xff) << (i * 8);
+        }
+        return result;
+    }
+
+    private int nthBit(int b, int n) {
+        return (b >> n) & 1;
+    }
+
+    private byte[] readBytes(int start, int n) {
+        byte[] result = new byte[n];
+        if (start + n - start >= 0) System.arraycopy(data, start, result, 0, start + n - start);
         return result;
     }
 

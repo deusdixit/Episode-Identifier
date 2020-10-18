@@ -18,7 +18,7 @@ public class Main {
         Path path3 = Paths.get("/home/niels/Downloads/test.srt");
         //Path path4 = Paths.get("/home/niels/Downloads/spa1.srt");
         Sup sup = new Sup(path);
-        sup.toJson(Paths.get("firstJson.json"));
+        sup.toJson("sndjson");
         //TextSub tsub = new TextSub(path3);
         //tsub.parse();
         //draw(tsub.getTimestamps());
