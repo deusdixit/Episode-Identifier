@@ -39,6 +39,13 @@ public class Sup {
         return segments;
     }
 
+    public Map<Integer, BufferedImage> getImages() {
+        if (segments == null) {
+            parse();
+        }
+        return allImages;
+    }
+
     public void toJson(String filename) {
         Path filepath = Paths.get(filename + ".json");
         if (segments == null) {
@@ -73,7 +80,23 @@ public class Sup {
         }
     }
 
-    public void parse() {
+    public void toJsonWithoutImages(String filename) {
+        Path filepath = Paths.get(filename + ".json");
+        if (segments == null) {
+            parse();
+        }
+        Gson gson = new Gson();
+
+        try {
+            String json = gson.toJson(segments);
+            Files.write(filepath, json.getBytes());
+        } catch (IOException ioex) {
+            System.out.println("IOException while writing json...");
+            System.out.println(ioex.getMessage());
+        }
+    }
+
+    private void parse() {
         List<PGS> objs = new ArrayList<>();
         allImages = new TreeMap<>();
         for (int i = 0; i < data.length - 1; i++) {
@@ -407,7 +430,6 @@ public class Sup {
         return result;
 
     }
-
 
     private BufferedImage getImages(int index, int length, int width, int height) {
         BufferedImage result = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_ARGB);

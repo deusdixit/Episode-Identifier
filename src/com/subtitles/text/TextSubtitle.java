@@ -1,4 +1,4 @@
-package com.subtitles.sup;
+package com.subtitles.text;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TextSub {
+public class TextSubtitle {
 
     private List<String> data;
     private int[] timestamps = null;
 
-    public TextSub(Path path) {
+    public TextSubtitle(Path path) {
         System.out.println(path.toAbsolutePath());
         try {
             data = Files.readAllLines(path);
-        } catch(IOException ioex) {
+        } catch (IOException ioex) {
             System.out.println("IOException : " + ioex.getLocalizedMessage());
         }
     }
