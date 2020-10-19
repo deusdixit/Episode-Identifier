@@ -1,5 +1,7 @@
 package com.subtitles.sup;
 
+import com.subtitles.sup.model.PGS;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,9 @@ public class Main {
         //Path path4 = Paths.get("/home/niels/Downloads/spa1.srt");
         Sup sup = new Sup(path);
         sup.toJson("sndjson");
+
+        PGS[] segments = sup.getSegments();
+        int pTime = segments[0].presentationTimestamp;
         //TextSub tsub = new TextSub(path3);
         //tsub.parse();
         //draw(tsub.getTimestamps());
