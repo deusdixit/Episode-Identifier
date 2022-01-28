@@ -1,5 +1,8 @@
 package base;
 
+import cli.Runner;
+import picocli.CommandLine;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,7 +13,7 @@ import java.util.BitSet;
 public class Main {
 
     public static void main(String[] args) {
-
+        int exitCode = new CommandLine(new Runner()).execute(args);
     }
 
     public static void draw(BitSet timestamps, String prefix) {

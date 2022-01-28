@@ -37,9 +37,9 @@ public class Dataloader {
         return null;
     }
 
-    public static DataSet loadSrt(Path path) {
+    public static DataSet loadSrt(Path path, boolean recursive) {
         try {
-            List<Path> srtFiles = Files.walk(path).filter(p -> p.toFile().isFile() && p.toString().endsWith("srt")).collect(Collectors.toList());
+            List<Path> srtFiles = Files.walk(path, recursive ? Integer.MAX_VALUE : 1).filter(p -> p.toFile().isFile() && p.toString().endsWith("srt")).collect(Collectors.toList());
             //srtFiles = srtFiles.subList(0, srtFiles.size()> 1000 ? 1000 : srtFiles.size());
             int bitCount = 0;
             int i = 0;

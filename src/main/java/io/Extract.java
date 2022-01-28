@@ -1,6 +1,7 @@
 package io;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
@@ -8,11 +9,13 @@ import java.util.LinkedList;
 
 public class Extract {
 
-    public static void extractAll(Path path) throws IOException {
+    public static File[] extractAll(Path path) throws IOException {
         FfprobeResult[] subs = getSubtitleIds(path);
-
+        File folder = new File(String.format("./subs/%s/", path.getFileName().toString().replace(".sup", "")));
+        folder.mkdirs();
+        File[] result = new File[subs.length];
         for (int i = 0; i < subs.length; i++) {
-            Process proc = Runtime.getRuntime().exec(String.format("ffmpeg -i %s -map 0:%d -c:s copy %d.sup", path.toString(), subs[i].streamID, subs[i].streamID));
+            Process proc = Runtime.getRuntime().exec(String.format("ffmpeg -i %s -map 0:%d -c:s copy %s%d.sup", path.toString(), subs[i].streamID, folder.toString(), subs[i].streamID));
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
             String s = null;
@@ -22,7 +25,9 @@ public class Extract {
             while ((s = stdError.readLine()) != null) {
                 System.out.println(s);
             }
+            result[i] = new File(String.format("%s%d.sup", folder.toString(), subs[i].streamID));
         }
+        return result;
     }
 
     private static FfprobeResult[] getSubtitleIds(Path path) throws IOException {
