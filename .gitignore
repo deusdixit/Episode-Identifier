@@ -3,3 +3,4 @@
 /target/
 /.idea/libraries/
 .attach_pid*
+/tmp/

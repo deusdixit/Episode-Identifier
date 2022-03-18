@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class DataSet implements Serializable {
     @Serial
@@ -42,7 +43,12 @@ public class DataSet implements Serializable {
 
     public ArrayList<Item> getByImdb(int imdb) {
         Collections.sort(items);
-        int index = Collections.binarySearch(items, new Item(imdb, 0, null));
+        int index = Collections.binarySearch(items, new Item(imdb, 0, null), new Comparator<Item>() {
+            @Override
+            public int compare(Item item, Item t1) {
+                return Integer.compare(item.getImdbId(), t1.getImdbId());
+            }
+        });
         ArrayList<Item> result = new ArrayList<>();
         if (index >= 0) {
             for (int i = index; i >= 0; i--) {
