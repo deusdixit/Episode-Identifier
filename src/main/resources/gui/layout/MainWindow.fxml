@@ -107,7 +107,7 @@
                                                 GridPane.columnIndex="1"/>
                                         <Button fx:id="anaBttn" disable="true" maxHeight="1.7976931348623157E308"
                                                 maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                                                text="Run analysis" GridPane.rowIndex="1"/>
+                                                onAction="#anaAction" text="Run analysis" GridPane.rowIndex="1"/>
                                         <ProgressBar fx:id="progressBar" maxHeight="1.7976931348623157E308"
                                                      maxWidth="1.7976931348623157E308" prefWidth="200.0" progress="0.0"
                                                      GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>

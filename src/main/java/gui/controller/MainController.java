@@ -2,10 +2,12 @@ package gui.controller;
 
 import gui.models.SeasonListViewItem;
 import gui.models.TableFeature;
+import gui.tasks.IdentifyTask;
 import gui.tasks.SeasonSearchTask;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
+import io.DataSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -29,7 +31,7 @@ public class MainController implements Initializable {
     private final String APIKEY = "9t8TuCJNE6AUBw0M7tlYDUVpmtwSHH8L";
 
     @FXML
-    public Button loadFilesBttn, searchBttn, downloadBttn;
+    public Button loadFilesBttn, searchBttn, downloadBttn, anaBttn;
 
     @FXML
     public ListView renameList, previewList, seasonList;
@@ -49,6 +51,9 @@ public class MainController implements Initializable {
     @FXML
     private DatabaseTabController databaseTabController;
 
+    @FXML
+    private ProgressBar progressBar;
+
     private Stage mainStage;
     private Opensubtitles os = null;
     private SpinnerValueFactory<Integer> svfEpisode = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
@@ -63,7 +68,22 @@ public class MainController implements Initializable {
     }
 
     public Opensubtitles getOS() {
-        return os;
+        if (login()) {
+            return os;
+        } else {
+            return null;
+        }
+    }
+
+    public DataSet getDB() {
+        try {
+            return Database.getDatabase();
+        } catch (IOException ioe) {
+
+        } catch (ClassNotFoundException cnfe) {
+
+        }
+        return null;
     }
 
     public void setStage(Stage stage) {
@@ -79,6 +99,11 @@ public class MainController implements Initializable {
             for (File f : files) {
                 renameList.getItems().add(f);
             }
+        }
+        if (renameList.getItems().size() > 0) {
+            anaBttn.setDisable(false);
+        } else {
+            anaBttn.setDisable(true);
         }
     }
 
@@ -119,11 +144,23 @@ public class MainController implements Initializable {
         }
     }
 
+    public void anaAction() {
+        anaBttn.setDisable(true);
+        loadFilesBttn.setDisable(true);
+        IdentifyTask task = new IdentifyTask(this);
+        Thread identTask = new Thread(task);
+        progressBar.progressProperty().bind(task.progressProperty());
+        identTask.setDaemon(true);
+        identTask.start();
+    }
+
     private boolean login() {
-        if (os == null) {
+        if (os == null && usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
             os = new Opensubtitles(usernameField.getText(), passwordField.getText(), APIKEY);
-        } else {
+        } else if (os != null) {
             return true;
+        } else {
+            return false;
         }
         try {
             LoginResult lr = os.login();
