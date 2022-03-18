@@ -4,7 +4,6 @@ import org.ebml.EBMLReader;
 import org.ebml.Element;
 import org.ebml.MasterElement;
 import org.ebml.ProtoType;
-import org.ebml.io.DataSource;
 import org.ebml.io.FileDataSource;
 import org.ebml.matroska.MatroskaDocTypes;
 import subtitles.text.TextSubtitle;
@@ -38,30 +37,38 @@ public class Dataloader {
     }
 
     public static DataSet loadSrt(Path path, boolean recursive) {
+        return loadSrt(path, recursive, null);
+    }
+
+    public static DataSet loadSrt(Path path, boolean recursive, DataSet ds) {
+        if (ds == null) {
+            ds = new DataSet();
+        }
         try {
             List<Path> srtFiles = Files.walk(path, recursive ? Integer.MAX_VALUE : 1).filter(p -> p.toFile().isFile() && p.toString().endsWith("srt")).collect(Collectors.toList());
-            //srtFiles = srtFiles.subList(0, srtFiles.size()> 1000 ? 1000 : srtFiles.size());
             int bitCount = 0;
             int i = 0;
-            DataSet result = new DataSet();
             for (Path p : srtFiles) {
                 TextSubtitle tsub = new TextSubtitle(p);
                 int imdbid;
+                int fileid;
                 try {
                     imdbid = Integer.parseInt(p.getFileName().toString().split("\\.")[0].split("-")[1]);
+                    fileid = Integer.parseInt(p.getFileName().toString().split("\\.")[0].split("-")[2]);
                 } catch (NumberFormatException ex) {
                     System.err.println("Error reading IMDB from file " + p.toString());
                     continue;
                 }
-                result.add(new Item(imdbid, tsub.getTimeMask()));
+                if (!ds.contains(imdbid, fileid)) {
+                    ds.add(new Item(imdbid, fileid, tsub.getTimeMask()));
+                }
                 i++;
                 bitCount += tsub.getTimeMask().length();
-                if (i % 100 == 0) {
-                    System.out.println(String.format("[%09d/%09d]", i, srtFiles.size()));
-                }
+                System.out.println(String.format("[%09d/%09d]", i, srtFiles.size()));
+
             }
-            System.out.println(String.format("%d Megabytes", bitCount / 8 / 1024 / 1024));
-            return result;
+            System.out.println(String.format("%d Kilobytes", bitCount / 8 / 1024));
+            return ds;
         } catch (IOException e) {
             e.printStackTrace();
         }

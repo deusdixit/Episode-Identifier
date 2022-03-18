@@ -2,7 +2,8 @@ package io;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class DataSet implements Serializable {
     @Serial
@@ -26,14 +27,41 @@ public class DataSet implements Serializable {
         return items.get(index);
     }
 
-    public Item getByImdb(int imdb) {
+    public boolean contains(int imdb) {
+        return getByImdb(imdb).size() > 0;
+    }
+
+    public ArrayList<Item> get() {
+        return items;
+    }
+
+    public boolean contains(int imdb, int fileid) {
+        ArrayList<Item> items = getByImdb(imdb);
+        return Collections.binarySearch(items, new Item(imdb, fileid, null)) >= 0;
+    }
+
+    public ArrayList<Item> getByImdb(int imdb) {
         Collections.sort(items);
-        int index = Collections.binarySearch(items, new Item(imdb, null));
+        int index = Collections.binarySearch(items, new Item(imdb, 0, null));
+        ArrayList<Item> result = new ArrayList<>();
         if (index >= 0) {
-            return items.get(index);
-        } else {
-            return null;
+            for (int i = index; i >= 0; i--) {
+                if (items.get(i).getImdbId() == imdb) {
+                    result.add(items.get(i));
+                } else {
+                    break;
+                }
+            }
+            for (int i = index + 1; i < items.size(); i++) {
+                if (items.get(i).getImdbId() == imdb) {
+                    result.add(items.get(i));
+                } else {
+                    break;
+                }
+            }
         }
+        Collections.sort(result);
+        return result;
     }
 
 }

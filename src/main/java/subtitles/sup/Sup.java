@@ -1,6 +1,7 @@
 package subtitles.sup;
 
 import com.google.gson.Gson;
+import subtitles.Subtitle;
 import subtitles.sup.model.*;
 
 import javax.imageio.ImageIO;
@@ -11,10 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
-public class Sup {
+public class Sup extends Subtitle {
 
     private final int magicNumber = 0x5047;
     private final int endSequenceId = 0x80;
@@ -48,6 +49,9 @@ public class Sup {
                     continue;
                 } else if (b < 0 && pcs.compositionState == 0) {
                     b = pcs.presentationTimestamp / 90000;
+                } else if (a < 0 && pcs.compositionState == 64) {
+                    a = pcs.presentationTimestamp / 90000;
+                    continue;
                 } else {
                     System.out.println("Irgendwas stimmt nicht");
                     continue;
@@ -156,7 +160,7 @@ public class Sup {
             case 0x80 -> obj = end(index, obj);
             default -> System.out.println("Found unknown type : " + type);
         }
-        System.out.println("Size of the segment : " + sizeOfSegment + " - Segment type : " + type);
+        //System.out.println("Size of the segment : " + sizeOfSegment + " - Segment type : " + type);
         return obj;
     }
 
@@ -284,7 +288,7 @@ public class Sup {
         result.objectCroppingHeight = readNBytes(index, 2);
         left -= 2;
         if (left > 0) {
-            System.out.println("Segment Size doesn't fit");
+            //System.err.println("Segment Size doesn't fit");
         }
         return result;
 
@@ -337,7 +341,7 @@ public class Sup {
         result.windowHeight = readNBytes(index, 2);
         left -= 2;
         if (left > 0) {
-            System.out.println("Segment Size doesn't fit");
+            //System.out.println("Segment Size doesn't fit");
         }
         return result;
     }
@@ -391,7 +395,7 @@ public class Sup {
         result.transparencyAlpha = readNBytes(index, 1);
         left--;
         if (left > 0) {
-            System.out.println("Segment Size doesn't fit");
+            //System.out.println("Segment Size doesn't fit");
         }
         return result;
     }
@@ -443,13 +447,12 @@ public class Sup {
         result.height = readNBytes(index, 2);
 
         index += 2;
-        BufferedImage image = getImages(index, result.objectDataLength, result.width, result.height);
-        allImages.put(result.presentationTimestamp, image);
-/*        try {
-            ImageIO.write(image, "png", new File("bild.png"));
-        } catch(IOException ex) {
-            System.out.println(ex.getMessage());
-        }*/
+        try {
+            //BufferedImage image = getImages(index, result.objectDataLength, result.width, result.height);
+            //allImages.put(result.presentationTimestamp, image);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+
+        }
         return result;
 
     }
