@@ -38,11 +38,12 @@ public class IdentifyTask extends Task<Void> {
                         rpItem.setPreviewItem(combo);
                     }
                 });
-                updateProgress(0, 0);
+
             } catch (Exception ex) {
 
             }
         }
+        updateProgress(0, 0);
         main.anaBttn.setDisable(false);
         main.loadFilesBttn.setDisable(false);
         main.renameBttn.setDisable(false);
