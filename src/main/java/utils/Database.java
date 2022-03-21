@@ -26,7 +26,6 @@ public class Database {
         Path subdir = Paths.get(DEFAULT_SUB_PATH);
         if (path.toFile().exists()) {
             ds = Dataloader.load(path);
-            ;
         } else {
             if (!subdir.toFile().exists()) {
                 subdir.toFile().mkdirs();
@@ -44,6 +43,10 @@ public class Database {
         Dataloader.loadSrt(path, true, getDatabase());
     }
 
+    public static void saveDatabase(DataSet ds) throws IOException {
+        Dataloader.save(ds, Paths.get(DEFAULT_DB_PATH));
+    }
+
     public static void downloadAutomatic(Opensubtitles os, int imdb) throws IOException, InterruptedException, ClassNotFoundException {
         SubtitlesQuery sq = new SubtitlesQuery().setImdbId(imdb);
         SubtitlesResult sr = os.getSubtitles(sq.build());
@@ -53,9 +56,11 @@ public class Database {
             for (int j = 0; j < sr.data[i].attributes.files.length; j++) {
                 Subtitle.FileObject fd = sr.data[i].attributes.files[j];
                 if (!ds.contains(imdb, fd.file_id)) {
+                    Path path = Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt");
                     DownloadLinkResult dlr = os.getDownloadLink(fd);
-                    os.download(dlr, Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt"));
+                    os.download(dlr, path);
                     System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
+                    Dataloader.loadFile(path, getDatabase());
                     return;
                 }
             }

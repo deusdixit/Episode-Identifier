@@ -22,9 +22,11 @@ public class Candidate {
     private File[] SubtitleFiles = null;
     private Subtitle[] Subtitles = null;
     private List<Similarity.SimResult> Candidates = null;
+    private final DataSet ds;
 
-    public Candidate(File f) {
+    public Candidate(File f, DataSet ds) {
         MovieFile = f;
+        this.ds = ds;
     }
 
     public File[] getSubtitleFiles() throws IOException {
@@ -42,13 +44,13 @@ public class Candidate {
         return MovieFile.getAbsolutePath();
     }
 
-    public List<Similarity.SimResult> getCandidates(DataSet ds) throws IOException {
+    public List<Similarity.SimResult> getCandidates() throws IOException {
         if (Candidates == null) {
             Subtitle[] subs = getSubtitles();
             Similarity sim = new Similarity(ds);
             LinkedList<Similarity.SimResult> result = new LinkedList<>();
             for (int i = 0; i < subs.length; i++) {
-                result.addAll(sim.getNeighbors(subs[i].getTimeMask(), 2));
+                result.addAll(sim.getNeighbors(subs[i].getTimeMask(), 4));
             }
             Collections.sort(result, (a, b) -> -Double.compare(a.getAccuarcy(), b.getAccuarcy()));
             Candidates = result;
@@ -67,9 +69,8 @@ public class Candidate {
         return Subtitles;
     }
 
-    public String getSuggestion(DataSet ds, Opensubtitles os) throws IOException, InterruptedException {
-        List<Similarity.SimResult> sim = getCandidates(ds);
-        int imdbid = sim.get(0).getImdb();
+    public String getFilename(Similarity.SimResult sim, Opensubtitles os) throws IOException, InterruptedException {
+        int imdbid = sim.getImdb();
         String filename = MovieFile.getName();
         String[] split = filename.split("\\.");
         String newName = "";
@@ -83,8 +84,8 @@ public class Candidate {
         }
 
         String result = "";
-        for (int i = 0; i < split.length - 1; i++) {
-            result += split[i] + ".";
+        for (int j = 0; j < split.length - 1; j++) {
+            result += split[j] + ".";
         }
         result = result.substring(0, result.length() - 1);
         if (newName.length() < 1) {
@@ -92,5 +93,40 @@ public class Candidate {
         } else {
             return MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
         }
+    }
+
+    public String[] getSuggestions(Opensubtitles os, int num) throws IOException, InterruptedException {
+        List<Similarity.SimResult> sim = getCandidates();
+        String[] resultArr = new String[Math.min(num, sim.size())];
+        for (int i = 0; i < resultArr.length; i++) {
+            int imdbid = sim.get(i).getImdb();
+            String filename = MovieFile.getName();
+            String[] split = filename.split("\\.");
+            String newName = "";
+            if (os != null) {
+                FeatureQuery fq = new FeatureQuery().setImdbId(imdbid);
+                Feature[] features = os.getFeatures(fq.build());
+                if (features[0] instanceof Episode) {
+                    Episode e = (Episode) features[0];
+                    newName = String.format("%s-S%02dE%02d", e.attributes.parent_title, e.attributes.season_number, e.attributes.episode_number);
+                }
+            }
+
+            String result = "";
+            for (int j = 0; j < split.length - 1; j++) {
+                result += split[j] + ".";
+            }
+            result = result.substring(0, result.length() - 1);
+            if (newName.length() < 1) {
+                resultArr[i] = MovieFile.getParent() + "/" + result + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
+            } else {
+                resultArr[i] = MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
+            }
+        }
+        return resultArr;
+    }
+
+    public String getSuggestion(Opensubtitles os) throws IOException, InterruptedException {
+        return getSuggestions(os, 1)[0];
     }
 }

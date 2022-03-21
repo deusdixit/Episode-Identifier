@@ -48,7 +48,7 @@ public class Identifier implements Callable<Integer> {
         Candidate[] cans = new Candidate[files.length];
         for (int i = 0; i < files.length; i++) {
             if (files[i].exists()) {
-                Candidate c = new Candidate(files[i]);
+                Candidate c = new Candidate(files[i], parent.dataset);
                 cans[i] = c;
             } else {
                 System.out.println();
@@ -56,7 +56,7 @@ public class Identifier implements Callable<Integer> {
         }
         for (int i = 0; i < cans.length; i++) {
             if (cans[i] != null) {
-                String sugg = cans[i].getSuggestion(parent.dataset, os);
+                String sugg = cans[i].getSuggestion(os);
                 System.out.println(cans[i].getAbsolutePath() + " -> " + sugg);
                 if (!dry) {
                     if (!rename) {

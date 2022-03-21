@@ -1,13 +1,16 @@
 package gui.controller;
 
-import gui.models.SeasonListViewItem;
-import gui.models.TableFeature;
+import gui.models.*;
+import gui.tasks.DownloadTask;
 import gui.tasks.IdentifyTask;
 import gui.tasks.SeasonSearchTask;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
 import io.DataSet;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -31,33 +34,34 @@ public class MainController implements Initializable {
     private final String APIKEY = "9t8TuCJNE6AUBw0M7tlYDUVpmtwSHH8L";
 
     @FXML
-    public Button loadFilesBttn, searchBttn, downloadBttn, anaBttn;
+    public Button loadFilesBttn, searchBttn, downloadBttn, anaBttn, renameBttn;
 
     @FXML
-    public ListView renameList, previewList, seasonList;
+    public ListView<RenamePreviewWrapper> renameList;
 
     @FXML
-    TextField usernameField, passwordField, searchField;
+    public ListView<RenamePreviewWrapper> previewList;
 
     @FXML
-    public TableColumn<TableFeature, String> yearColumn, titleColumn, imdbColumn, seasonColumn, episodeColumn;
-
+    public ListView seasonList;
+    @FXML
+    public TableColumn<TableFeature, String> yearColumn, titleColumn, imdbColumn, seasonColumn, episodeColumn, inDatabaseColumn;
     @FXML
     public TableView osTable;
-
     @FXML
-    Spinner<Integer> episodeSpinner, seasonSpinner;
+    TextField usernameField, passwordField, searchField;
+    @FXML
+    Spinner<Integer> seasonSpinner;
 
     @FXML
     private DatabaseTabController databaseTabController;
 
     @FXML
-    private ProgressBar progressBar;
+    private ProgressBar progressBar, progressBar2;
 
     private Stage mainStage;
     private Opensubtitles os = null;
-    private SpinnerValueFactory<Integer> svfEpisode = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
-    private SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
+    private final SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
 
     public MainController() {
 
@@ -79,9 +83,9 @@ public class MainController implements Initializable {
         try {
             return Database.getDatabase();
         } catch (IOException ioe) {
-
+            System.out.println();
         } catch (ClassNotFoundException cnfe) {
-
+            System.out.println();
         }
         return null;
     }
@@ -97,14 +101,18 @@ public class MainController implements Initializable {
         List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
         if (files != null && files.size() > 0) {
             for (File f : files) {
-                renameList.getItems().add(f);
+                RenamePreviewWrapper rpW = new RenamePreviewWrapper(new RenameItem(f));
+                rpW.addListener(new InvalidationListener() {
+                    @Override
+                    public void invalidated(Observable observable) {
+                        renameList.refresh();
+                        previewList.refresh();
+                    }
+                });
+                renameList.getItems().add(rpW);
             }
         }
-        if (renameList.getItems().size() > 0) {
-            anaBttn.setDisable(false);
-        } else {
-            anaBttn.setDisable(true);
-        }
+        anaBttn.setDisable(renameList.getItems().size() <= 0);
     }
 
     public void checkLoginAction() {
@@ -116,20 +124,13 @@ public class MainController implements Initializable {
     }
 
     public void downloadBttnAction() {
-        ObservableList<TableFeature> list = osTable.getItems();
-        if (!list.isEmpty()) {
-            for (TableFeature tf : list) {
-                try {
-                    Database.downloadAutomatic(getOS(), tf.imdbProperty().getValue());
-                } catch (IOException ioe) {
-
-                } catch (ClassNotFoundException cnfe) {
-
-                } catch (InterruptedException ie) {
-
-                }
-            }
-        }
+        downloadBttn.setDisable(true);
+        searchBttn.setDisable(true);
+        DownloadTask task = new DownloadTask(this);
+        Thread downloadTask = new Thread(task);
+        progressBar2.progressProperty().bind(task.progressProperty());
+        downloadTask.setDaemon(true);
+        downloadTask.start();
     }
 
     public void loadMenuAction() {
@@ -144,9 +145,28 @@ public class MainController implements Initializable {
         }
     }
 
+    public void renameAction() {
+        if (renameList.getItems().size() != previewList.getItems().size()) {
+            System.out.println("Error");
+        } else {
+            for (int i = 0; i < renameList.getItems().size(); i++) {
+                File oldFile = renameList.getItems().get(i).getRenameItem().getValue();
+                File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
+                if (oldFile.renameTo(newFile)) {
+                    System.out.println("Renamed to " + newFile);
+                } else {
+                    System.out.println("Error");
+                }
+            }
+            renameList.getItems().clear();
+            previewList.getItems().clear();
+        }
+    }
+
     public void anaAction() {
         anaBttn.setDisable(true);
         loadFilesBttn.setDisable(true);
+        renameBttn.setDisable(true);
         IdentifyTask task = new IdentifyTask(this);
         Thread identTask = new Thread(task);
         progressBar.progressProperty().bind(task.progressProperty());
@@ -157,11 +177,7 @@ public class MainController implements Initializable {
     private boolean login() {
         if (os == null && usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
             os = new Opensubtitles(usernameField.getText(), passwordField.getText(), APIKEY);
-        } else if (os != null) {
-            return true;
-        } else {
-            return false;
-        }
+        } else return os != null;
         try {
             LoginResult lr = os.login();
             if (lr.status == 200) {
@@ -177,11 +193,6 @@ public class MainController implements Initializable {
 
     public void searchBttnAction() throws IOException, InterruptedException {
         if (login()) {
-            titleColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("title"));
-            yearColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("year"));
-            imdbColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("imdb"));
-            seasonColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("season"));
-            episodeColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("episode"));
             String value = searchField.getText();
             FeatureQuery fq = new FeatureQuery().setQuery(value).setType(FeatureQuery.Type.TVSHOW);
             if (seasonSpinner.getValue() >= 0) {
@@ -216,7 +227,36 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        episodeSpinner.setValueFactory(svfEpisode);
         seasonSpinner.setValueFactory(svfSeason);
+        previewList.setCellFactory(new Callback<ListView<RenamePreviewWrapper>, ListCell<RenamePreviewWrapper>>() {
+            @Override
+            public ListCell<RenamePreviewWrapper> call(ListView<RenamePreviewWrapper> selectedCandidateListView) {
+                return new ListFactoryItem(false);
+            }
+        });
+        renameList.setCellFactory(new Callback<ListView<RenamePreviewWrapper>, ListCell<RenamePreviewWrapper>>() {
+            @Override
+            public ListCell<RenamePreviewWrapper> call(ListView<RenamePreviewWrapper> renamePreviewWrapperListView) {
+                return new ListFactoryItem(true);
+            }
+        });
+        ObservableList<RenamePreviewWrapper> rpList = FXCollections.observableList(new ArrayList<>());
+        renameList.setItems(rpList);
+        previewList.setItems(rpList);
+        databaseTabController.addAll(getDB().get());
+        renameList.setFixedCellSize(25);
+        titleColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("title"));
+        yearColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("year"));
+        imdbColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("imdb"));
+        seasonColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("season"));
+        episodeColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("episode"));
+        inDatabaseColumn.setCellValueFactory(item -> {
+            int imdb = item.getValue().imdbProperty().get();
+            if (getDB() != null) {
+                return new SimpleStringProperty(String.valueOf(getDB().getByImdb(imdb).size()));
+            } else {
+                return new SimpleStringProperty("0");
+            }
+        });
     }
 }

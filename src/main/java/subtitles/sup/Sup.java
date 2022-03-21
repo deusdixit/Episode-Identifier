@@ -53,7 +53,6 @@ public class Sup extends Subtitle {
                     a = pcs.presentationTimestamp / 90000;
                     continue;
                 } else {
-                    System.out.println("Irgendwas stimmt nicht");
                     continue;
                 }
                 for (int i = a; i <= b; i++) {

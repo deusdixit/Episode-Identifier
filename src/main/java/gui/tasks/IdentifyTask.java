@@ -1,11 +1,15 @@
 package gui.tasks;
 
 import gui.controller.MainController;
+import gui.models.PreviewItem;
+import gui.models.RenamePreviewWrapper;
+import hamming.Similarity;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import model.Candidate;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IdentifyTask extends Task<Void> {
 
@@ -18,17 +22,21 @@ public class IdentifyTask extends Task<Void> {
     @Override
     protected Void call() throws Exception {
         int counter = 0;
-        for (Object obj : this.main.renameList.getItems()) {
-            Candidate can = new Candidate((File) obj);
+        for (RenamePreviewWrapper rpItem : this.main.renameList.getItems()) {
+            Candidate can = new Candidate(rpItem.getRenameItem().getValue(), main.getDB());
             try {
-                String newName = can.getSuggestion(this.main.getDB(), this.main.getOS());
-                System.out.println(newName);
+                List<Similarity.SimResult> result = can.getCandidates();
+                List<PreviewItem.ComboItem> combo = new ArrayList<>();
+                for (int i = 0; i < result.size(); i++) {
+                    combo.add(new PreviewItem.ComboItem(result.get(i), can.getFilename(result.get(i), main.getOS())));
+                }
+                //System.out.println(Arrays.toString(newNames));
                 updateProgress(counter, main.renameList.getItems().size() - 1);
                 counter++;
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        main.previewList.getItems().add(newName);
+                        rpItem.setPreviewItem(combo);
                     }
                 });
 
@@ -38,7 +46,7 @@ public class IdentifyTask extends Task<Void> {
         }
         main.anaBttn.setDisable(false);
         main.loadFilesBttn.setDisable(false);
-
+        main.renameBttn.setDisable(false);
         return null;
     }
 }

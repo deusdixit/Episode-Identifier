@@ -40,6 +40,23 @@ public class Dataloader {
         return loadSrt(path, recursive, null);
     }
 
+    public static DataSet loadFile(Path path, DataSet ds) {
+        TextSubtitle tsub = new TextSubtitle(path);
+        int imdbid;
+        int fileid;
+        try {
+            imdbid = Integer.parseInt(path.getFileName().toString().split("\\.")[0].split("-")[1]);
+            fileid = Integer.parseInt(path.getFileName().toString().split("\\.")[0].split("-")[2]);
+        } catch (NumberFormatException ex) {
+            System.err.println("Error reading IMDB from file " + path.toString());
+            return ds;
+        }
+        if (!ds.contains(imdbid, fileid)) {
+            ds.add(new Item(imdbid, fileid, tsub.getTimeMask()));
+        }
+        return ds;
+    }
+
     public static DataSet loadSrt(Path path, boolean recursive, DataSet ds) {
         if (ds == null) {
             ds = new DataSet();
@@ -49,25 +66,11 @@ public class Dataloader {
             int bitCount = 0;
             int i = 0;
             for (Path p : srtFiles) {
-                TextSubtitle tsub = new TextSubtitle(p);
-                int imdbid;
-                int fileid;
-                try {
-                    imdbid = Integer.parseInt(p.getFileName().toString().split("\\.")[0].split("-")[1]);
-                    fileid = Integer.parseInt(p.getFileName().toString().split("\\.")[0].split("-")[2]);
-                } catch (NumberFormatException ex) {
-                    System.err.println("Error reading IMDB from file " + p.toString());
-                    continue;
-                }
-                if (!ds.contains(imdbid, fileid)) {
-                    ds.add(new Item(imdbid, fileid, tsub.getTimeMask()));
-                }
+                loadFile(p, ds);
                 i++;
-                bitCount += tsub.getTimeMask().length();
                 System.out.println(String.format("[%09d/%09d]", i, srtFiles.size()));
-
             }
-            System.out.println(String.format("%d Kilobytes", bitCount / 8 / 1024));
+            //System.out.println(String.format("%d Kilobytes", bitCount / 8 / 1024));
             return ds;
         } catch (IOException e) {
             e.printStackTrace();

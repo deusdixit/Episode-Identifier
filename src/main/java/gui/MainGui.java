@@ -6,15 +6,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.Database;
+
+import java.io.IOException;
 
 public class MainGui extends Application {
 
+
+    private MainController controller = null;
 
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/layout/MainWindow.fxml"));
         Parent root = loader.load();
-        MainController controller = loader.getController();
+        controller = loader.getController();
         controller.setStage(stage);
         Scene scene = new Scene(root, 700, 700);
         stage.setScene(scene);
@@ -24,5 +29,15 @@ public class MainGui extends Application {
 
     public void show() {
         launch();
+    }
+
+    public void stop() {
+        if (controller != null) {
+            try {
+                Database.saveDatabase(controller.getDB());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

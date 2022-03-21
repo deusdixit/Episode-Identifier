@@ -1,12 +1,14 @@
 package gui.controller;
 
 import io.Item;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 import java.util.ArrayList;
 
@@ -42,8 +44,18 @@ public class DatabaseTabController {
 
     @FXML
     private void initialize() {
-        fileIdColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("fileId"));
-        imdbColumn.setCellValueFactory(new PropertyValueFactory<Item, String>("imdbId"));
+        fileIdColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> itemStringCellDataFeatures) {
+                return new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getFileId()));
+            }
+        });
+        imdbColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Item, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Item, String> itemStringCellDataFeatures) {
+                return new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getImdbId()));
+            }
+        });
         data = FXCollections.observableList(new ArrayList<>());
         osTable.setItems(data);
     }
