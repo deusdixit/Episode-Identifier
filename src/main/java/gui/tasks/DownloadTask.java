@@ -1,18 +1,19 @@
 package gui.tasks;
 
-import gui.controller.MainController;
+import gui.controller.OpensubtitlesController;
 import gui.models.TableFeature;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import utils.Database;
+import utils.OsApi;
 
 import java.io.IOException;
 
 public class DownloadTask extends Task<Void> {
 
-    private final MainController main;
+    private final OpensubtitlesController main;
 
-    public DownloadTask(MainController main) {
+    public DownloadTask(OpensubtitlesController main) {
         this.main = main;
     }
 
@@ -23,7 +24,7 @@ public class DownloadTask extends Task<Void> {
             int counter = 0;
             for (TableFeature tf : list) {
                 try {
-                    Database.downloadAutomatic(main.getOS(), tf.imdbProperty().getValue());
+                    Database.downloadAutomatic(OsApi.getInstance(), tf.imdbProperty().getValue());
                     updateProgress(++counter, list.size());
                 } catch (IOException ioe) {
 

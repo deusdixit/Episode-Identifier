@@ -1,6 +1,6 @@
 package gui.tasks;
 
-import gui.controller.MainController;
+import gui.controller.OpensubtitlesController;
 import gui.models.TableFeature;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.Episode;
@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
+import utils.OsApi;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -23,9 +24,9 @@ public class EpisodeSearchTask extends Task<Void> {
     private final String parentId;
     private final Button downloadBttn;
 
-    public EpisodeSearchTask(TvShow.Season season, MainController main, String pId) {
+    public EpisodeSearchTask(TvShow.Season season, OpensubtitlesController main, String pId) {
         this.season = season;
-        this.os = main.getOS();
+        this.os = OsApi.getInstance();
         this.osTable = main.osTable;
         this.parentId = pId;
         this.downloadBttn = main.downloadBttn;

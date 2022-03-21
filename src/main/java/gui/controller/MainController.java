@@ -1,22 +1,20 @@
 package gui.controller;
 
-import gui.models.*;
-import gui.tasks.DownloadTask;
+import gui.models.ListFactoryItem;
+import gui.models.RenameItem;
+import gui.models.RenamePreviewWrapper;
 import gui.tasks.IdentifyTask;
-import gui.tasks.SeasonSearchTask;
-import id.gasper.opensubtitles.Opensubtitles;
-import id.gasper.opensubtitles.models.authentication.LoginResult;
-import id.gasper.opensubtitles.models.features.FeatureQuery;
 import io.DataSet;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -31,10 +29,9 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
-    private final String APIKEY = "9t8TuCJNE6AUBw0M7tlYDUVpmtwSHH8L";
 
     @FXML
-    public Button loadFilesBttn, searchBttn, downloadBttn, anaBttn, renameBttn;
+    public Button loadFilesBttn, anaBttn, renameBttn;
 
     @FXML
     public ListView<RenamePreviewWrapper> renameList;
@@ -43,25 +40,13 @@ public class MainController implements Initializable {
     public ListView<RenamePreviewWrapper> previewList;
 
     @FXML
-    public ListView seasonList;
-    @FXML
-    public TableColumn<TableFeature, String> yearColumn, titleColumn, imdbColumn, seasonColumn, episodeColumn, inDatabaseColumn;
-    @FXML
-    public TableView osTable;
-    @FXML
-    TextField usernameField, passwordField, searchField;
-    @FXML
-    Spinner<Integer> seasonSpinner;
+    private ProgressBar progressBar;
+
+    private Stage mainStage;
 
     @FXML
     private DatabaseTabController databaseTabController;
 
-    @FXML
-    private ProgressBar progressBar, progressBar2;
-
-    private Stage mainStage;
-    private Opensubtitles os = null;
-    private final SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
 
     public MainController() {
 
@@ -71,24 +56,8 @@ public class MainController implements Initializable {
         mainStage = s;
     }
 
-    public Opensubtitles getOS() {
-        if (login()) {
-            return os;
-        } else {
-            return null;
-        }
-    }
 
-    public DataSet getDB() {
-        try {
-            return Database.getDatabase();
-        } catch (IOException ioe) {
-            System.out.println();
-        } catch (ClassNotFoundException cnfe) {
-            System.out.println();
-        }
-        return null;
-    }
+
 
     public void setStage(Stage stage) {
         mainStage = stage;
@@ -115,23 +84,7 @@ public class MainController implements Initializable {
         anaBttn.setDisable(renameList.getItems().size() <= 0);
     }
 
-    public void checkLoginAction() {
-        login();
-    }
 
-    public void searchFieldChanged() {
-
-    }
-
-    public void downloadBttnAction() {
-        downloadBttn.setDisable(true);
-        searchBttn.setDisable(true);
-        DownloadTask task = new DownloadTask(this);
-        Thread downloadTask = new Thread(task);
-        progressBar2.progressProperty().bind(task.progressProperty());
-        downloadTask.setDaemon(true);
-        downloadTask.start();
-    }
 
     public void loadMenuAction() {
         try {
@@ -174,60 +127,22 @@ public class MainController implements Initializable {
         identTask.start();
     }
 
-    private boolean login() {
-        if (os == null && usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
-            os = new Opensubtitles(usernameField.getText(), passwordField.getText(), APIKEY);
-        } else return os != null;
+
+    public DataSet getDB() {
         try {
-            LoginResult lr = os.login();
-            if (lr.status == 200) {
-                return true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            return Database.getDatabase();
+        } catch (IOException ioe) {
+            System.out.println();
+        } catch (ClassNotFoundException cnfe) {
+            System.out.println();
         }
-        return false;
+        return null;
     }
 
-    public void searchBttnAction() throws IOException, InterruptedException {
-        if (login()) {
-            String value = searchField.getText();
-            FeatureQuery fq = new FeatureQuery().setQuery(value).setType(FeatureQuery.Type.TVSHOW);
-            if (seasonSpinner.getValue() >= 0) {
-
-            }
-            ObservableList<TableFeature> liste = FXCollections.observableList(new ArrayList<>());
-            seasonList.setCellFactory(new Callback<ListView<SeasonListViewItem>, ListCell<SeasonListViewItem>>() {
-                @Override
-                public ListCell<SeasonListViewItem> call(ListView<SeasonListViewItem> seasonListViewItemListView) {
-                    return new ListCell<>() {
-                        @Override
-                        public void updateItem(SeasonListViewItem item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                                setGraphic(null);
-                            } else {
-                                setText(null);
-                                setGraphic(item);
-                            }
-                        }
-                    };
-                }
-            });
-            seasonList.setItems(liste);
-            SeasonSearchTask task = new SeasonSearchTask(value, -1, this);
-            Thread getEpisodesThread = new Thread(task);
-            getEpisodesThread.setDaemon(true);
-            getEpisodesThread.start();
-        }
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        seasonSpinner.setValueFactory(svfSeason);
+
         previewList.setCellFactory(new Callback<ListView<RenamePreviewWrapper>, ListCell<RenamePreviewWrapper>>() {
             @Override
             public ListCell<RenamePreviewWrapper> call(ListView<RenamePreviewWrapper> selectedCandidateListView) {
@@ -245,18 +160,6 @@ public class MainController implements Initializable {
         previewList.setItems(rpList);
         databaseTabController.addAll(getDB().get());
         renameList.setFixedCellSize(25);
-        titleColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("title"));
-        yearColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("year"));
-        imdbColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("imdb"));
-        seasonColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("season"));
-        episodeColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("episode"));
-        inDatabaseColumn.setCellValueFactory(item -> {
-            int imdb = item.getValue().imdbProperty().get();
-            if (getDB() != null) {
-                return new SimpleStringProperty(String.valueOf(getDB().getByImdb(imdb).size()));
-            } else {
-                return new SimpleStringProperty("0");
-            }
-        });
+
     }
 }
