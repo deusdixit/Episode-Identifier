@@ -1,6 +1,6 @@
 package gui.tasks;
 
-import gui.controller.MainController;
+import gui.controller.IdentifyTabController;
 import gui.models.PreviewItem;
 import gui.models.RenamePreviewWrapper;
 import hamming.Similarity;
@@ -14,9 +14,9 @@ import java.util.List;
 
 public class IdentifyTask extends Task<Void> {
 
-    private final MainController main;
+    private final IdentifyTabController main;
 
-    public IdentifyTask(MainController main) {
+    public IdentifyTask(IdentifyTabController main) {
         this.main = main;
     }
 
@@ -31,7 +31,7 @@ public class IdentifyTask extends Task<Void> {
                 for (int i = 0; i < result.size(); i++) {
                     combo.add(new PreviewItem.ComboItem(result.get(i), can.getFilename(result.get(i), OsApi.getInstance())));
                 }
-                updateProgress(counter, main.renameList.getItems().size() - 1);
+                updateProgress(counter, main.renameList.getItems().size());
                 counter++;
                 Platform.runLater(new Runnable() {
                     @Override
@@ -39,7 +39,7 @@ public class IdentifyTask extends Task<Void> {
                         rpItem.setPreviewItem(combo);
                     }
                 });
-
+                updateProgress(0, 0);
             } catch (Exception ex) {
 
             }

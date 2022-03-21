@@ -1,6 +1,6 @@
 package gui.tasks;
 
-import gui.controller.OpensubtitlesController;
+import gui.controller.OpensubtitlesTabController;
 import gui.models.TableFeature;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -11,9 +11,9 @@ import java.io.IOException;
 
 public class DownloadTask extends Task<Void> {
 
-    private final OpensubtitlesController main;
+    private final OpensubtitlesTabController main;
 
-    public DownloadTask(OpensubtitlesController main) {
+    public DownloadTask(OpensubtitlesTabController main) {
         this.main = main;
     }
 
@@ -34,6 +34,7 @@ public class DownloadTask extends Task<Void> {
 
                 }
             }
+            updateProgress(0, 0);
         }
         main.downloadBttn.setDisable(false);
         main.searchBttn.setDisable(false);

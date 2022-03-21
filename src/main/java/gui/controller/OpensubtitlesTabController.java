@@ -22,7 +22,7 @@ import utils.OsApi;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class OpensubtitlesController {
+public class OpensubtitlesTabController {
 
     @FXML
     private Button checkLoginBttn;
@@ -46,7 +46,7 @@ public class OpensubtitlesController {
     private PasswordField passwordField;
 
     @FXML
-    private ProgressBar progressBar2;
+    public ProgressBar progressBar2;
 
     @FXML
     public Button searchBttn;
@@ -140,9 +140,10 @@ public class OpensubtitlesController {
             });
             seasonList.setItems(liste);
             SeasonSearchTask task = new SeasonSearchTask(value, -1, this);
-            Thread getEpisodesThread = new Thread(task);
-            getEpisodesThread.setDaemon(true);
-            getEpisodesThread.start();
+            Thread getSeasonThread = new Thread(task);
+
+            getSeasonThread.setDaemon(true);
+            getSeasonThread.start();
         }
     }
 

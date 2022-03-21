@@ -1,6 +1,6 @@
 package gui.models;
 
-import gui.controller.OpensubtitlesController;
+import gui.controller.OpensubtitlesTabController;
 import gui.tasks.EpisodeSearchTask;
 import id.gasper.opensubtitles.models.features.TvShow;
 import javafx.beans.value.ChangeListener;
@@ -13,7 +13,7 @@ public class SeasonListViewItem extends CheckBox {
     public final TvShow.Season season;
     private final String id;
 
-    public SeasonListViewItem(TvShow tvshow, int index, OpensubtitlesController main) {
+    public SeasonListViewItem(TvShow tvshow, int index, OpensubtitlesTabController main) {
         super();
         this.id = tvshow.attributes.feature_id + "-" + index;
         this.season = tvshow.attributes.seasons[index];
@@ -24,6 +24,7 @@ public class SeasonListViewItem extends CheckBox {
                 if (new_val) {
                     EpisodeSearchTask task = new EpisodeSearchTask(season, main, id);
                     Thread getEpisodesThread = new Thread(task);
+                    main.progressBar2.progressProperty().bind(task.progressProperty());
                     getEpisodesThread.setDaemon(true);
                     getEpisodesThread.start();
                 } else {

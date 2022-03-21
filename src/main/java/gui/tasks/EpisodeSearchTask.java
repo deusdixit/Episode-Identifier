@@ -1,6 +1,6 @@
 package gui.tasks;
 
-import gui.controller.OpensubtitlesController;
+import gui.controller.OpensubtitlesTabController;
 import gui.models.TableFeature;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.Episode;
@@ -24,7 +24,7 @@ public class EpisodeSearchTask extends Task<Void> {
     private final String parentId;
     private final Button downloadBttn;
 
-    public EpisodeSearchTask(TvShow.Season season, OpensubtitlesController main, String pId) {
+    public EpisodeSearchTask(TvShow.Season season, OpensubtitlesTabController main, String pId) {
         this.season = season;
         this.os = OsApi.getInstance();
         this.osTable = main.osTable;
@@ -39,7 +39,9 @@ public class EpisodeSearchTask extends Task<Void> {
     }
 
     private void getEpisodes(TvShow.Season s) throws IOException, InterruptedException {
+        int counter = 0;
         for (TvShow.Episode e : s.episodes) {
+            updateProgress(++counter, s.episodes.length);
             FeatureQuery fq = new FeatureQuery().setFeatureId(e.feature_id);
             Feature[] fs = os.getFeatures(fq);
             LinkedList<TableFeature> sub = new LinkedList<>();
@@ -59,5 +61,6 @@ public class EpisodeSearchTask extends Task<Void> {
                 }
             });
         }
+        updateProgress(0, 0);
     }
 }

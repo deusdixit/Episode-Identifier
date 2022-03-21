@@ -1,6 +1,6 @@
 package gui.tasks;
 
-import gui.controller.OpensubtitlesController;
+import gui.controller.OpensubtitlesTabController;
 import gui.models.SeasonListViewItem;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
@@ -21,9 +21,9 @@ public class SeasonSearchTask extends Task<Void> {
     private final int season;
     private final ListView lView;
     private final TableView osTable;
-    private final OpensubtitlesController main;
+    private final OpensubtitlesTabController main;
 
-    public SeasonSearchTask(String query, int season, OpensubtitlesController main) {
+    public SeasonSearchTask(String query, int season, OpensubtitlesTabController main) {
         this.os = OsApi.getInstance();
         this.main = main;
         this.query = query;
