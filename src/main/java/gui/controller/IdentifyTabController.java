@@ -8,12 +8,17 @@ import io.DataSet;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import utils.Database;
@@ -72,12 +77,7 @@ public class IdentifyTabController {
         identTask.start();
     }
 
-    @FXML
-    void loadFilesAction(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Resource File");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Video Files", "*.mkv", "*.mp4", "*.avi", "*.MKV", "*.MP4", "*.AVI"), new FileChooser.ExtensionFilter("All Files", "*.*"));
-        List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
+    private void addFiles(List<File> files) {
         if (files != null && files.size() > 0) {
             for (File f : files) {
                 RenamePreviewWrapper rpW = new RenamePreviewWrapper(new RenameItem(f));
@@ -91,7 +91,16 @@ public class IdentifyTabController {
                 renameList.getItems().add(rpW);
             }
         }
-        anaBttn.setDisable(renameList.getItems().size() <= 0);
+    }
+
+    @FXML
+    void loadFilesAction(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Video Files", "*.mkv", "*.mp4", "*.avi", "*.MKV", "*.MP4", "*.AVI"), new FileChooser.ExtensionFilter("All Files", "*.*"));
+        List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
+        addFiles(files);
+
     }
 
     @FXML
@@ -121,6 +130,36 @@ public class IdentifyTabController {
         renameList.setItems(rpList);
         previewList.setItems(rpList);
         renameList.setFixedCellSize(25);
+        renameList.getItems().addListener(new ListChangeListener<RenamePreviewWrapper>() {
+            @Override
+            public void onChanged(Change<? extends RenamePreviewWrapper> change) {
+                anaBttn.setDisable(renameList.getItems().size() <= 0);
+            }
+        });
+        renameList.setOnDragOver(new EventHandler<DragEvent>() {
+
+            @Override
+            public void handle(DragEvent event) {
+                if (event.getGestureSource() != renameList
+                        && event.getDragboard().hasFiles()) {
+                    /* allow for both copying and moving, whatever user chooses */
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                }
+                event.consume();
+            }
+        });
+        renameList.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent dragEvent) {
+                Dragboard db = dragEvent.getDragboard();
+                if (db.hasFiles()) {
+                    addFiles(db.getFiles());
+                }
+                dragEvent.setDropCompleted(true);
+
+                dragEvent.consume();
+            }
+        });
     }
 
 }

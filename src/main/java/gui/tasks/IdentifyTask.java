@@ -31,8 +31,7 @@ public class IdentifyTask extends Task<Void> {
                 for (int i = 0; i < result.size(); i++) {
                     combo.add(new PreviewItem.ComboItem(result.get(i), can.getFilename(result.get(i), OsApi.getInstance())));
                 }
-                updateProgress(counter, main.renameList.getItems().size());
-                counter++;
+                updateProgress(++counter, main.renameList.getItems().size());
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
