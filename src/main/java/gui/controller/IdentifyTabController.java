@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.components.ImageButton;
 import gui.models.ListFactoryItem;
 import gui.models.RenameItem;
 import gui.models.RenamePreviewWrapper;
@@ -11,12 +12,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.input.DragEvent;
+import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
@@ -31,10 +30,10 @@ import java.util.List;
 public class IdentifyTabController {
 
     @FXML
-    public Button anaBttn;
+    public ImageButton anaBttn;
 
     @FXML
-    public Button loadFilesBttn;
+    public ImageButton loadFilesBttn;
 
     @FXML
     private ListView<RenamePreviewWrapper> previewList;
@@ -43,7 +42,7 @@ public class IdentifyTabController {
     private ProgressBar progressBar;
 
     @FXML
-    public Button renameBttn;
+    public ImageButton renameBttn;
 
     @FXML
     public ListView<RenamePreviewWrapper> renameList;
@@ -130,36 +129,36 @@ public class IdentifyTabController {
         renameList.setItems(rpList);
         previewList.setItems(rpList);
         renameList.setFixedCellSize(25);
-        renameList.getItems().addListener(new ListChangeListener<RenamePreviewWrapper>() {
-            @Override
-            public void onChanged(Change<? extends RenamePreviewWrapper> change) {
-                anaBttn.setDisable(renameList.getItems().size() <= 0);
-            }
-        });
-        renameList.setOnDragOver(new EventHandler<DragEvent>() {
-
-            @Override
-            public void handle(DragEvent event) {
-                if (event.getGestureSource() != renameList
-                        && event.getDragboard().hasFiles()) {
-                    /* allow for both copying and moving, whatever user chooses */
-                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        renameList.getItems().addListener((ListChangeListener<RenamePreviewWrapper>) change -> {
+            anaBttn.setDisable(renameList.getItems().size() <= 0);
+            boolean isDone = previewList.getItems().size() > 0;
+            for (RenamePreviewWrapper rpW : previewList.getItems()) {
+                if (!rpW.isSet) {
+                    isDone = false;
+                    break;
                 }
-                event.consume();
             }
+            renameBttn.setDisable(!isDone);
         });
-        renameList.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent dragEvent) {
-                Dragboard db = dragEvent.getDragboard();
-                if (db.hasFiles()) {
-                    addFiles(db.getFiles());
-                }
-                dragEvent.setDropCompleted(true);
-
-                dragEvent.consume();
+        renameList.setOnDragOver(event -> {
+            if (event.getGestureSource() != renameList
+                    && event.getDragboard().hasFiles()) {
+                /* allow for both copying and moving, whatever user chooses */
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
+            event.consume();
         });
+        renameList.setOnDragDropped(dragEvent -> {
+            Dragboard db = dragEvent.getDragboard();
+            if (db.hasFiles()) {
+                addFiles(db.getFiles());
+            }
+            dragEvent.setDropCompleted(true);
+            dragEvent.consume();
+        });
+        loadFilesBttn.setImage(new Image(getClass().getResourceAsStream("/cross.png")), 50, 50);
+        anaBttn.setImage(new Image(getClass().getResourceAsStream("/ana.png")), 50, 50);
+        renameBttn.setImage(new Image(getClass().getResourceAsStream("/rename.png")), 50, 50);
     }
 
 }

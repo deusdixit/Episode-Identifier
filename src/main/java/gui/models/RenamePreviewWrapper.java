@@ -10,6 +10,7 @@ public class RenamePreviewWrapper implements Observable {
 
     private RenameItem renameItem;
     private PreviewItem previewItem;
+    public boolean isSet = false;
 
     public RenamePreviewWrapper(RenameItem rI, PreviewItem pI) {
         renameItem = rI;
@@ -32,6 +33,9 @@ public class RenamePreviewWrapper implements Observable {
 
     public void setPreviewItem(List<PreviewItem.ComboItem> pI) {
         previewItem.setValue(pI);
+        if (pI.size() > 0) {
+            isSet = true;
+        }
     }
 
     public RenameItem getRenameItem() {
