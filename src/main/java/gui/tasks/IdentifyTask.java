@@ -1,7 +1,7 @@
 package gui.tasks;
 
+import gui.components.PreviewListItem;
 import gui.controller.IdentifyTabController;
-import gui.models.PreviewItem;
 import gui.models.RenamePreviewWrapper;
 import hamming.Similarity;
 import javafx.application.Platform;
@@ -27,9 +27,9 @@ public class IdentifyTask extends Task<Void> {
             Candidate can = new Candidate(rpItem.getRenameItem().getValue(), main.getDB());
             try {
                 List<Similarity.SimResult> result = can.getCandidates();
-                List<PreviewItem.ComboItem> combo = new ArrayList<>();
+                List<PreviewListItem.ComboItem> combo = new ArrayList<>();
                 for (int i = 0; i < result.size(); i++) {
-                    combo.add(new PreviewItem.ComboItem(result.get(i), can.getFilename(result.get(i), OsApi.getInstance())));
+                    combo.add(new PreviewListItem.ComboItem(result.get(i), can.getFilename(result.get(i), OsApi.getInstance())));
                 }
                 updateProgress(++counter, main.renameList.getItems().size());
                 Platform.runLater(new Runnable() {

@@ -108,12 +108,14 @@ public class IdentifyTabController {
             System.out.println("Error");
         } else {
             for (int i = 0; i < renameList.getItems().size(); i++) {
-                File oldFile = renameList.getItems().get(i).getRenameItem().getValue();
-                File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
-                if (oldFile.renameTo(newFile)) {
-                    System.out.println("Renamed to " + newFile);
-                } else {
-                    System.out.println("Error");
+                if (renameList.getItems().get(i).isActive()) {
+                    File oldFile = renameList.getItems().get(i).getRenameItem().getValue();
+                    File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
+                    if (oldFile.renameTo(newFile)) {
+                        System.out.println("Renamed to " + newFile);
+                    } else {
+                        System.out.println("Error");
+                    }
                 }
             }
             renameList.getItems().clear();

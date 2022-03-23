@@ -1,5 +1,6 @@
 package gui.models;
 
+import gui.components.PreviewListItem;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 
@@ -31,11 +32,18 @@ public class RenamePreviewWrapper implements Observable {
         renameItem.setValue(rI);
     }
 
-    public void setPreviewItem(List<PreviewItem.ComboItem> pI) {
+    public void setPreviewItem(List<PreviewListItem.ComboItem> pI) {
         previewItem.setValue(pI);
         if (pI.size() > 0) {
             isSet = true;
         }
+    }
+
+    public boolean isActive() {
+        if (isSet) {
+            return getPreviewItem().isActive();
+        }
+        return false;
     }
 
     public RenameItem getRenameItem() {
