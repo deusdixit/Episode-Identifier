@@ -1,0 +1,37 @@
+.combo-box .list-cell:selected {
+-fx-text-fill: green;
+}
+
+* {
+	-fx-primary-color: white;
+	-fx-secondary-color: white;
+	-fx-grey-color: #b9b9b9;
+    -fx-white-color: #ffffff;
+	-fx-focus-color: -fx-secondary-color;
+}
+
+.combo-box-base {
+	-fx-background-color: -fx-primary-color;
+	-fx-background-radius: 0;
+}
+.combo-box-base:hover {
+	-fx-background-color: -fx-secondary-color;
+}
+.combo-box-base:disabled {
+	-fx-background-color: -fx-grey-color;
+}
+
+.combo-box-base .arrow-button .arrow {
+	-fx-background-color: black;
+}
+/* WHILE OPEN */
+.combo-box-base:showing {
+	-fx-background-color: -fx-secondary-color;
+}
+.combo-box .combo-box-popup .list-view .list-cell {
+	-fx-background-color: -fx-primary-color;
+}
+.combo-box .combo-box-popup .list-view .list-cell:hover,
+.combo-box .combo-box-popup .list-view .list-cell:selected {
+	-fx-background-color: -fx-secondary-color;
+}

@@ -18,9 +18,15 @@ public class ListFactoryItem extends ListCell<RenamePreviewWrapper> {
             setGraphic(null);
         } else {
             if (isRenameList) {
+                this.setMaxHeight(25);
+                this.setMinHeight(25);
+                this.setPrefHeight(25);
                 setText(item.getRenameItem().toString());
                 setGraphic(null);
             } else {
+                this.setMaxHeight(25);
+                this.setMinHeight(25);
+                this.setPrefHeight(25);
                 setText(null);
                 setGraphic(item.getPreviewItem().getValue());
             }

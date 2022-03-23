@@ -156,9 +156,9 @@ public class IdentifyTabController {
             dragEvent.setDropCompleted(true);
             dragEvent.consume();
         });
-        loadFilesBttn.setImage(new Image(getClass().getResourceAsStream("/cross.png")), 50, 50);
-        anaBttn.setImage(new Image(getClass().getResourceAsStream("/ana.png")), 50, 50);
-        renameBttn.setImage(new Image(getClass().getResourceAsStream("/rename.png")), 50, 50);
+        loadFilesBttn.setImage(new Image(getClass().getResourceAsStream("/icons/cross.png")), 50, 50);
+        anaBttn.setImage(new Image(getClass().getResourceAsStream("/icons/ana.png")), 50, 50);
+        renameBttn.setImage(new Image(getClass().getResourceAsStream("/icons/rename.png")), 50, 50);
     }
 
 }
