@@ -38,12 +38,12 @@ public class DataSet implements Serializable {
 
     public boolean contains(int imdb, int fileid) {
         ArrayList<Item> items = getByImdb(imdb);
-        return Collections.binarySearch(items, new Item(imdb, fileid, null)) >= 0;
+        return Collections.binarySearch(items, new Item(imdb, fileid, null, null)) >= 0;
     }
 
     public ArrayList<Item> getByImdb(int imdb) {
         Collections.sort(items);
-        int index = Collections.binarySearch(items, new Item(imdb, 0, null), new Comparator<Item>() {
+        int index = Collections.binarySearch(items, new Item(imdb, 0, null, null), new Comparator<Item>() {
             @Override
             public int compare(Item item, Item t1) {
                 return Integer.compare(item.getImdbId(), t1.getImdbId());

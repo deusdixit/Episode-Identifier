@@ -6,7 +6,6 @@ import io.Item;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Similarity {
 
@@ -16,7 +15,7 @@ public class Similarity {
         DS = data;
     }
 
-    public double getSimilarity(BitSet x, BitSet y) {
+    private double getSimilarity(BitSet x, BitSet y) {
         BitSet copy = (BitSet) y.clone();
         BitSet copy2 = (BitSet) y.clone();
         copy.and(x);
@@ -26,7 +25,7 @@ public class Similarity {
         return dist;
     }
 
-    public double getSimilarityInverse(BitSet x, BitSet y) {
+    private double getSimilarityInverse(BitSet x, BitSet y) {
         BitSet copy = (BitSet) y.clone();
         BitSet copy2 = (BitSet) y.clone();
         BitSet xcopy = (BitSet) x.clone();

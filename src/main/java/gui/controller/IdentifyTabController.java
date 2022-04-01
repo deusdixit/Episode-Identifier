@@ -102,6 +102,9 @@ public class IdentifyTabController {
 
     }
 
+    /*
+    FIX DATA LOSS BUG WITH RENAMING
+     */
     @FXML
     void renameAction(ActionEvent event) {
         if (renameList.getItems().size() != previewList.getItems().size()) {

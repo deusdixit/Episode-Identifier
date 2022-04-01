@@ -40,7 +40,8 @@ public class IdentifyTask extends Task<Void> {
                 });
 
             } catch (Exception ex) {
-
+                System.out.println(ex.getLocalizedMessage());
+                System.out.println();
             }
         }
         updateProgress(0, 0);

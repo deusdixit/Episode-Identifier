@@ -52,7 +52,7 @@ public class Dataloader {
             return ds;
         }
         if (!ds.contains(imdbid, fileid)) {
-            ds.add(new Item(imdbid, fileid, tsub.getTimeMask()));
+            ds.add(new Item(imdbid, fileid, null, tsub.getTimeMask()));
         }
         return ds;
     }

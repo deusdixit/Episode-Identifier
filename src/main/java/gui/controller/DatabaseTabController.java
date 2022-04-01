@@ -21,6 +21,15 @@ public class DatabaseTabController {
     private TableColumn<Item, String> imdbColumn;
 
     @FXML
+    private TableColumn<Item, String> seasonColumn;
+
+    @FXML
+    private TableColumn<Item, String> episodeColumn;
+
+    @FXML
+    private TableColumn<Item, String> parentTitleColumn;
+
+    @FXML
     private TableView osTable;
 
 
@@ -44,6 +53,15 @@ public class DatabaseTabController {
     private void initialize() {
         fileIdColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getFileId())));
         imdbColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getImdbId())));
+        seasonColumn.setCellValueFactory(item -> {
+            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getSeasonNumber())) : new SimpleStringProperty();
+        });
+        episodeColumn.setCellValueFactory(item -> {
+            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getEpisodeNumber())) : new SimpleStringProperty();
+        });
+        parentTitleColumn.setCellValueFactory(item -> {
+            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getParentTitle())) : new SimpleStringProperty();
+        });
         data = FXCollections.observableList(new ArrayList<>());
         osTable.setItems(data);
     }

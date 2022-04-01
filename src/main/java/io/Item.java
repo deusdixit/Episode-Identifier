@@ -8,12 +8,14 @@ public class Item implements Comparable<Item>, Serializable {
     private int imdbId;
     private BitSet data;
     private int fileId;
+    private AttributesWrapper aWrapper;
     private static final long serialVersionUID = 4480600303123781401L;
 
-    public Item(int imdb, int fileid, BitSet data) {
+    public Item(int imdb, int fileid, AttributesWrapper aw, BitSet data) {
         this.data = data;
         this.imdbId = imdb;
         this.fileId = fileid;
+        this.aWrapper = aw;
     }
 
     public int getImdbId() {
@@ -26,6 +28,10 @@ public class Item implements Comparable<Item>, Serializable {
 
     public BitSet getData() {
         return data;
+    }
+
+    public AttributesWrapper getAttributeWrapper() {
+        return aWrapper;
     }
 
     @Override

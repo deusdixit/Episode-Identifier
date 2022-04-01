@@ -74,13 +74,15 @@
                 <RowConstraints minHeight="30.0" prefHeight="30.0"/>
                 <RowConstraints minHeight="30.0" prefHeight="30.0"/>
                 <RowConstraints minHeight="30.0" prefHeight="30.0"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0"/>
             </rowConstraints>
             <children>
                 <TextField fx:id="searchField" onKeyTyped="#searchFieldChanged" promptText="Search"
                            GridPane.columnIndex="1"/>
                 <Button fx:id="searchBttn" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
                         onAction="#searchBttnAction" text="Search" GridPane.columnIndex="1"
-                        GridPane.columnSpan="2147483647" GridPane.rowIndex="2"/>
+                        GridPane.columnSpan="2147483647" GridPane.rowIndex="4"/>
                 <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                        text="Search Query :">
                     <GridPane.margin>
@@ -95,6 +97,15 @@
                 </Label>
                 <Spinner fx:id="seasonSpinner" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
                          GridPane.rowIndex="1"/>
+                <CheckBox fx:id="episodeCheckbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                          mnemonicParsing="false" text="Ugly Fix" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <TextField fx:id="imdbField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                       text="Parent Imdb ID :" GridPane.rowIndex="2">
+                    <GridPane.margin>
+                        <Insets right="20.0"/>
+                    </GridPane.margin>
+                </Label>
             </children>
             <GridPane.margin>
                 <Insets right="20.0"/>

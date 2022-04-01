@@ -11,13 +11,15 @@ import java.util.LinkedList;
 
 public class Extract {
 
+    private static int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
+
     public static File[] extractAll(Path path) throws IOException {
         FfprobeResult[] subs = getSubtitleIds(path);
         String subsFolder = String.format("./tmp/%s/", path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""));
         Files.createDirectories(Paths.get(subsFolder));
-        File[] result = new File[subs.length];
+        File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
-        for (int i = 0; i < subs.length; i++) {
+        for (int i = 0; i < result.length; i++) {
             String[] cmd = new String[]{
                     "ffmpeg",
                     "-loglevel",

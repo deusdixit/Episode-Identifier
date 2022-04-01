@@ -40,6 +40,20 @@ public class TableFeature {
         }
     }
 
+    public TableFeature(String title, String year, int season, int episode, int imdb, String parentId) {
+        this.parentId = parentId;
+        this.title = new SimpleStringProperty();
+        this.year = new SimpleStringProperty();
+        this.season = new SimpleIntegerProperty();
+        this.episode = new SimpleIntegerProperty();
+        this.imdb = new SimpleIntegerProperty();
+        this.title.set(title);
+        this.imdb.set(imdb);
+        this.year.set(year);
+        this.season.set(season);
+        this.episode.set(episode);
+    }
+
     public String getParentId() {
         return parentId;
     }

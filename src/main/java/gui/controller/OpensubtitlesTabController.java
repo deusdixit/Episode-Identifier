@@ -4,12 +4,14 @@ import gui.models.SeasonListViewItem;
 import gui.models.TableFeature;
 import gui.tasks.DownloadTask;
 import gui.tasks.SeasonSearchTask;
+import gui.tasks.UglyTask;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
 import io.DataSet;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -52,7 +54,7 @@ public class OpensubtitlesTabController {
     public Button searchBttn;
 
     @FXML
-    private TextField searchField;
+    public TextField searchField;
 
     @FXML
     private TableColumn<TableFeature, String> seasonColumn;
@@ -61,7 +63,7 @@ public class OpensubtitlesTabController {
     public ListView seasonList;
 
     @FXML
-    private Spinner<Integer> seasonSpinner;
+    public Spinner<Integer> seasonSpinner;
 
     @FXML
     private TableColumn<TableFeature, String> titleColumn;
@@ -71,6 +73,12 @@ public class OpensubtitlesTabController {
 
     @FXML
     private TableColumn<TableFeature, String> yearColumn;
+
+    @FXML
+    CheckBox episodeCheckbox;
+
+    @FXML
+    public TextField imdbField;
 
     private final SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
 
@@ -115,35 +123,19 @@ public class OpensubtitlesTabController {
     public void searchBttnAction() throws IOException, InterruptedException {
         if (isLoggedIn()) {
             String value = searchField.getText();
-            FeatureQuery fq = new FeatureQuery().setQuery(value).setType(FeatureQuery.Type.TVSHOW);
-            if (seasonSpinner.getValue() >= 0) {
-
+            if (episodeCheckbox.isSelected() && seasonSpinner.getValue() > 0) {
+                UglyTask task = new UglyTask(this);
+                Thread uglythread = new Thread(task);
+                uglythread.setDaemon(true);
+                uglythread.start();
+            } else {
+                FeatureQuery fq = new FeatureQuery().setQuery(value);
+                fq.setType(FeatureQuery.Type.TVSHOW);
+                SeasonSearchTask task = new SeasonSearchTask(value, -1, this);
+                Thread getSeasonThread = new Thread(task);
+                getSeasonThread.setDaemon(true);
+                getSeasonThread.start();
             }
-            ObservableList<TableFeature> liste = FXCollections.observableList(new ArrayList<>());
-            seasonList.setCellFactory(new Callback<ListView<SeasonListViewItem>, ListCell<SeasonListViewItem>>() {
-                @Override
-                public ListCell<SeasonListViewItem> call(ListView<SeasonListViewItem> seasonListViewItemListView) {
-                    return new ListCell<>() {
-                        @Override
-                        public void updateItem(SeasonListViewItem item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                                setGraphic(null);
-                            } else {
-                                setText(null);
-                                setGraphic(item);
-                            }
-                        }
-                    };
-                }
-            });
-            seasonList.setItems(liste);
-            SeasonSearchTask task = new SeasonSearchTask(value, -1, this);
-            Thread getSeasonThread = new Thread(task);
-
-            getSeasonThread.setDaemon(true);
-            getSeasonThread.start();
         }
     }
 
@@ -165,6 +157,36 @@ public class OpensubtitlesTabController {
 
     @FXML
     public void initialize() {
+        seasonList.setCellFactory(new Callback<ListView<SeasonListViewItem>, ListCell<SeasonListViewItem>>() {
+            @Override
+            public ListCell<SeasonListViewItem> call(ListView<SeasonListViewItem> seasonListViewItemListView) {
+                return new ListCell<>() {
+                    @Override
+                    public void updateItem(SeasonListViewItem item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            setText(null);
+                            setGraphic(item);
+                        }
+                    }
+                };
+            }
+        });
+        ObservableList<TableFeature> liste = FXCollections.observableList(new ArrayList<>());
+        seasonList.setItems(liste);
+        osTable.getItems().addListener(new ListChangeListener<TableFeature>() {
+            @Override
+            public void onChanged(Change<? extends TableFeature> change) {
+                if (change.getList().size() > 0) {
+                    downloadBttn.setDisable(false);
+                } else {
+                    downloadBttn.setDisable(true);
+                }
+            }
+        });
         seasonSpinner.setValueFactory(svfSeason);
         titleColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("title"));
         yearColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("year"));

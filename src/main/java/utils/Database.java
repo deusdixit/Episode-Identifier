@@ -5,8 +5,11 @@ import id.gasper.opensubtitles.models.download.DownloadLinkResult;
 import id.gasper.opensubtitles.models.features.Subtitle;
 import id.gasper.opensubtitles.models.subtitles.SubtitlesQuery;
 import id.gasper.opensubtitles.models.subtitles.SubtitlesResult;
+import io.AttributesWrapper;
 import io.DataSet;
 import io.Dataloader;
+import io.Item;
+import subtitles.text.TextSubtitle;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -60,7 +63,9 @@ public class Database {
                     DownloadLinkResult dlr = os.getDownloadLink(fd);
                     os.download(dlr, path);
                     System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
-                    Dataloader.loadFile(path, getDatabase());
+                    TextSubtitle tsub = new TextSubtitle(path);
+                    getDatabase().add(new Item(imdb, fd.file_id, new AttributesWrapper(sr.data[i].attributes.feature_details), tsub.getTimeMask()));
+                    //Dataloader.loadFile(path, getDatabase());
                     return;
                 }
             }

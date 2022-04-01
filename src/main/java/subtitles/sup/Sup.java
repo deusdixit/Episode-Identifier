@@ -47,7 +47,7 @@ public class Sup extends Subtitle {
                 if (a < 0 && pcs.compositionState == 128) {
                     a = pcs.presentationTimestamp / 90000;
                     continue;
-                } else if (b < 0 && pcs.compositionState == 0) {
+                } else if (a > 0 && b < 0 && pcs.compositionState == 0) {
                     b = pcs.presentationTimestamp / 90000;
                 } else if (a < 0 && pcs.compositionState == 64) {
                     a = pcs.presentationTimestamp / 90000;
