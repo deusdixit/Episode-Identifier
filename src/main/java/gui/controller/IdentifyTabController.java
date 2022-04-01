@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class IdentifyTabController {
 
@@ -110,9 +111,20 @@ public class IdentifyTabController {
         if (renameList.getItems().size() != previewList.getItems().size()) {
             System.out.println("Error");
         } else {
+            // Rename all files to distinct temporary file names to prevent data loss
+            File[] tmpFiles = new File[renameList.getItems().size()];
+            int tmpId = ThreadLocalRandom.current().nextInt();
             for (int i = 0; i < renameList.getItems().size(); i++) {
                 if (renameList.getItems().get(i).isActive()) {
-                    File oldFile = renameList.getItems().get(i).getRenameItem().getValue();
+                    String tmpName = i + "-" + tmpId;
+                    tmpFiles[i] = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + "/" + tmpName);
+                    renameList.getItems().get(i).getRenameItem().getValue().renameTo(tmpFiles[i]);
+                }
+            }
+            // Rename the files with temporary filenames to the suggested filenames
+            for (int i = 0; i < renameList.getItems().size(); i++) {
+                if (renameList.getItems().get(i).isActive()) {
+                    File oldFile = tmpFiles[i];
                     File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
                     if (oldFile.renameTo(newFile)) {
                         System.out.println("Renamed to " + newFile);

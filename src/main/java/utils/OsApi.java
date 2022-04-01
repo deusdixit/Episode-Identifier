@@ -19,4 +19,8 @@ public class OsApi {
         return API_KEY;
     }
 
+    public static boolean isLoggedIn() {
+        return instance != null && instance.isLoggedIn();
+    }
+
 }

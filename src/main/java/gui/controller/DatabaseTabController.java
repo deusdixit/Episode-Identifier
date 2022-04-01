@@ -7,7 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import utils.Database;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DatabaseTabController {
@@ -62,7 +64,13 @@ public class DatabaseTabController {
         parentTitleColumn.setCellValueFactory(item -> {
             return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getParentTitle())) : new SimpleStringProperty();
         });
-        data = FXCollections.observableList(new ArrayList<>());
+        try {
+            data = FXCollections.observableList(Database.getDatabase().get());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         osTable.setItems(data);
     }
 

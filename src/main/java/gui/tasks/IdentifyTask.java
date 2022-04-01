@@ -7,7 +7,6 @@ import hamming.Similarity;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import model.Candidate;
-import utils.OsApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class IdentifyTask extends Task<Void> {
                 List<Similarity.SimResult> result = can.getCandidates();
                 List<PreviewListItem.ComboItem> combo = new ArrayList<>();
                 for (int i = 0; i < result.size(); i++) {
-                    combo.add(new PreviewListItem.ComboItem(result.get(i), can.getFilename(result.get(i), OsApi.getInstance())));
+                    combo.add(new PreviewListItem.ComboItem(result.get(i), can.getFilename(result.get(i))));
                 }
                 updateProgress(++counter, main.renameList.getItems().size());
                 Platform.runLater(new Runnable() {

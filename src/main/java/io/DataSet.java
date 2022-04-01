@@ -41,6 +41,15 @@ public class DataSet implements Serializable {
         return Collections.binarySearch(items, new Item(imdb, fileid, null, null)) >= 0;
     }
 
+    public AttributesWrapper getAttributesByImdb(int imdb) {
+        for (Item i : getByImdb(imdb)) {
+            if (i.getAttributeWrapper() != null) {
+                return i.getAttributeWrapper();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Item> getByImdb(int imdb) {
         Collections.sort(items);
         int index = Collections.binarySearch(items, new Item(imdb, 0, null, null), new Comparator<Item>() {

@@ -5,10 +5,13 @@ import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.Episode;
 import id.gasper.opensubtitles.models.features.Feature;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
+import io.AttributesWrapper;
 import io.DataSet;
 import io.Extract;
 import subtitles.Subtitle;
 import subtitles.sup.Sup;
+import utils.Database;
+import utils.OsApi;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,59 +72,43 @@ public class Candidate {
         return Subtitles;
     }
 
-    public String getFilename(Similarity.SimResult sim, Opensubtitles os) throws IOException, InterruptedException {
+    public String getFilename(Similarity.SimResult sim) throws IOException, InterruptedException {
+        Opensubtitles os = OsApi.isLoggedIn() ? OsApi.getInstance() : null;
+        DataSet ds;
+        try {
+            ds = Database.getDatabase();
+        } catch (ClassNotFoundException cnfe) {
+            ds = null;
+        }
         int imdbid = sim.getImdb();
         String filename = MovieFile.getName();
         String[] split = filename.split("\\.");
         String newName = "";
-        if (os != null) {
+        AttributesWrapper aWrapper;
+
+        if (ds != null && (aWrapper = ds.getAttributesByImdb(imdbid)) != null) {
+            newName = String.format("%s-S%02dE%02d", aWrapper.getParentTitle(), aWrapper.getSeasonNumber(), aWrapper.getEpisodeNumber());
+        } else if (os != null) {
             FeatureQuery fq = new FeatureQuery().setImdbId(imdbid);
             Feature[] features = os.getFeatures(fq.build());
             if (features[0] instanceof Episode) {
                 Episode e = (Episode) features[0];
                 newName = String.format("%s-S%02dE%02d", e.attributes.parent_title, e.attributes.season_number, e.attributes.episode_number);
             }
-        }
-
-        String result = "";
-        for (int j = 0; j < split.length - 1; j++) {
-            result += split[j] + ".";
-        }
-        result = result.substring(0, result.length() - 1);
-        if (newName.length() < 1) {
-            return MovieFile.getParent() + "/" + result + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
         } else {
-            return MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
+            for (int j = 0; j < split.length - 1; j++) {
+                newName += split[j] + ".";
+            }
+            newName = newName.substring(0, newName.length() - 1);
         }
+        return MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
     }
 
     public String[] getSuggestions(Opensubtitles os, int num) throws IOException, InterruptedException {
         List<Similarity.SimResult> sim = getCandidates();
         String[] resultArr = new String[Math.min(num, sim.size())];
         for (int i = 0; i < resultArr.length; i++) {
-            int imdbid = sim.get(i).getImdb();
-            String filename = MovieFile.getName();
-            String[] split = filename.split("\\.");
-            String newName = "";
-            if (os != null) {
-                FeatureQuery fq = new FeatureQuery().setImdbId(imdbid);
-                Feature[] features = os.getFeatures(fq.build());
-                if (features[0] instanceof Episode) {
-                    Episode e = (Episode) features[0];
-                    newName = String.format("%s-S%02dE%02d", e.attributes.parent_title, e.attributes.season_number, e.attributes.episode_number);
-                }
-            }
-
-            String result = "";
-            for (int j = 0; j < split.length - 1; j++) {
-                result += split[j] + ".";
-            }
-            result = result.substring(0, result.length() - 1);
-            if (newName.length() < 1) {
-                resultArr[i] = MovieFile.getParent() + "/" + result + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
-            } else {
-                resultArr[i] = MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
-            }
+            resultArr[i] = getFilename(sim.get(i));
         }
         return resultArr;
     }
