@@ -4,3 +4,4 @@
 /.idea/libraries/
 .attach_pid*
 /tmp/
+*.srt

@@ -34,6 +34,10 @@ public class Item implements Comparable<Item>, Serializable {
         return aWrapper;
     }
 
+    public void setAttributeWrapper(AttributesWrapper aW) {
+        aWrapper = aW;
+    }
+
     @Override
     public int compareTo(Item o) {
         if (getImdbId() == o.getImdbId()) {

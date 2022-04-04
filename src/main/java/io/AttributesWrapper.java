@@ -1,5 +1,6 @@
 package io;
 
+import id.gasper.opensubtitles.models.features.Episode;
 import id.gasper.opensubtitles.models.features.Subtitle;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ public class AttributesWrapper implements Serializable {
     private String parentTitle;
     private int year;
     private String title;
+    private int tmbdId;
 
     private static final long serialVersionUID = 4480600303123781401L;
 
@@ -20,6 +22,16 @@ public class AttributesWrapper implements Serializable {
         parentTitle = fd.parent_title;
         year = fd.year;
         title = fd.title;
+        tmbdId = fd.tmdb_id;
+    }
+
+    public AttributesWrapper(Episode.Attributes fd) {
+        seasonNumber = fd.season_number;
+        episodeNumber = fd.episode_number;
+        parentTitle = fd.parent_title;
+        year = Integer.parseInt(fd.year);
+        title = fd.title;
+        tmbdId = fd.tmdb_id;
     }
 
     public int getSeasonNumber() {
@@ -40,5 +52,9 @@ public class AttributesWrapper implements Serializable {
 
     public String getTitle() {
         return title;
+    }
+
+    public int getTmbdId() {
+        return tmbdId;
     }
 }

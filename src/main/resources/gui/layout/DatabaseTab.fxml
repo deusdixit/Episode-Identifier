@@ -7,9 +7,11 @@
     <columns>
         <TableColumn fx:id="fileIdColumn" prefWidth="75.0" text="File Id"/>
         <TableColumn fx:id="imdbColumn" prefWidth="75.0" text="Imdb"/>
+        <TableColumn fx:id="tmbdColumn" prefWidth="75.0" text="Tmbd"/>
         <TableColumn fx:id="seasonColumn" prefWidth="75.0" text="Season"/>
         <TableColumn fx:id="episodeColumn" prefWidth="75.0" text="Episode"/>
         <TableColumn fx:id="parentTitleColumn" prefWidth="75.0" text="Parent Title"/>
+        <TableColumn fx:id="yearColumn" prefWidth="75.0" text="Year"/>
     </columns>
     <columnResizePolicy>
         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

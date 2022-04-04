@@ -39,13 +39,31 @@ public class Similarity {
         return dist;
     }
 
+    public BitSet shift(BitSet x, int num) {
+        BitSet result = new BitSet();
+        for (int i = 0; i < x.length(); i++) {
+            if (i + num >= 0 && x.get(i)) {
+                result.set(i + num);
+            }
+        }
+        return result;
+    }
+
     public LinkedList<SimResult> getNeighbors(BitSet x, int n) {
         LinkedList<SimResult> result = new LinkedList<>();
 
         for (int i = 0; i < DS.length(); i++) {
             Item data = DS.get(i);
-            double dist = getSimilarity(x, data.getData()) * getSimilarityInverse(x, data.getData());
-            result.add(new SimResult(data.getImdbId(), dist));
+            double lengthDelta = 1.0 - (Math.abs(x.length() - data.getData().length()) / (double) Math.max(x.length(), data.getData().length()));
+            double bestDist = 0.0;
+            for (int j = -100; j <= 100; j++) {
+                BitSet y = shift(data.getData(), j);
+                double dist = lengthDelta * getSimilarity(x, y) * getSimilarityInverse(x, y);
+                if (dist > bestDist) {
+                    bestDist = dist;
+                }
+            }
+            result.add(new SimResult(data.getImdbId(), bestDist));
         }
         Collections.sort(result, (a, b) -> -Double.compare(a.accuarcy, b.accuarcy));
 

@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.components.ImageButton;
 import gui.models.SeasonListViewItem;
 import gui.models.TableFeature;
 import gui.tasks.DownloadTask;
@@ -16,6 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import utils.Database;
@@ -23,6 +25,7 @@ import utils.OsApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class OpensubtitlesTabController {
 
@@ -30,7 +33,7 @@ public class OpensubtitlesTabController {
     private Button checkLoginBttn;
 
     @FXML
-    public Button downloadBttn;
+    public ImageButton downloadBttn;
 
     @FXML
     private TableColumn<TableFeature, String> episodeColumn;
@@ -79,6 +82,12 @@ public class OpensubtitlesTabController {
 
     @FXML
     public TextField imdbField;
+
+    @FXML
+    public ImageButton removeAllBttn;
+
+    @FXML
+    public ImageButton removeBttn;
 
     private final SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
 
@@ -140,8 +149,22 @@ public class OpensubtitlesTabController {
     }
 
     @FXML
+    public void removeAllAction() {
+        osTable.getItems().clear();
+    }
+
+    @FXML
     void searchFieldChanged(KeyEvent event) {
 
+    }
+
+    @FXML
+    public void removeBttnAction() {
+        ArrayList<TablePosition> tp = new ArrayList<>(osTable.getSelectionModel().getSelectedCells());
+        Collections.sort(tp, (x, y) -> -Integer.compare(x.getRow(), y.getRow()));
+        for (TablePosition t : tp) {
+            osTable.getItems().remove(t.getRow());
+        }
     }
 
     public DataSet getDB() {
@@ -182,8 +205,12 @@ public class OpensubtitlesTabController {
             public void onChanged(Change<? extends TableFeature> change) {
                 if (change.getList().size() > 0) {
                     downloadBttn.setDisable(false);
+                    removeAllBttn.setDisable(false);
+                    removeBttn.setDisable(false);
                 } else {
                     downloadBttn.setDisable(true);
+                    removeAllBttn.setDisable(true);
+                    removeBttn.setDisable(true);
                 }
             }
         });
@@ -193,6 +220,7 @@ public class OpensubtitlesTabController {
         imdbColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("imdb"));
         seasonColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("season"));
         episodeColumn.setCellValueFactory(new PropertyValueFactory<TableFeature, String>("episode"));
+        osTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         inDatabaseColumn.setCellValueFactory(item -> {
             int imdb = item.getValue().imdbProperty().get();
             if (getDB() != null) {
@@ -201,6 +229,9 @@ public class OpensubtitlesTabController {
                 return new SimpleStringProperty("0");
             }
         });
+        removeAllBttn.setImage(new Image(getClass().getResourceAsStream("/icons/remove_all.png")), 20, 20);
+        removeBttn.setImage(new Image(getClass().getResourceAsStream("/icons/remove.png")), 20, 20);
+        downloadBttn.setImage(new Image(getClass().getResourceAsStream("/icons/download.png")), 70, 70);
     }
 
 }

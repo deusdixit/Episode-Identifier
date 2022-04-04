@@ -13,6 +13,44 @@ public class Extract {
 
     private static int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
 
+    public static void extract(Path path, int streamId, File out) throws IOException {
+        boolean back = false;
+
+        String[] cmd = new String[]{
+                "ffmpeg",
+                "-loglevel",
+                "8",
+                "-progress",
+                "pipe:1",
+                "-y",
+                "-i",
+                path.toString(),
+                "-map",
+                "0:" + streamId,
+                "-c:s",
+                "copy",
+                out.toString()
+        };
+        Process proc = new ProcessBuilder(cmd).start();
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+        String s = null;
+
+        while ((s = stdInput.readLine()) != null) {
+            if (s.equals("progress=continue")) {
+                if (back) {
+                    System.out.print("/\r");
+                } else {
+                    System.out.print("\\\r");
+                }
+                back = !back;
+            }
+        }
+        while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
+        }
+    }
+
     public static File[] extractAll(Path path) throws IOException {
         FfprobeResult[] subs = getSubtitleIds(path);
         String subsFolder = String.format("./tmp/%s/", path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""));
@@ -58,7 +96,7 @@ public class Extract {
         return result;
     }
 
-    private static FfprobeResult[] getSubtitleIds(Path path) throws IOException {
+    public static FfprobeResult[] getSubtitleIds(Path path) throws IOException {
         String[] cmd = new String[]{
                 "ffprobe",
                 "-loglevel",
@@ -94,7 +132,7 @@ public class Extract {
         return result;
     }
 
-    private static class FfprobeResult {
+    public static class FfprobeResult {
 
         public final int streamID;
         public final String name;

@@ -11,6 +11,7 @@ import io.Extract;
 import subtitles.Subtitle;
 import subtitles.sup.Sup;
 import utils.Database;
+import utils.Naming;
 import utils.OsApi;
 
 import java.io.File;
@@ -72,7 +73,7 @@ public class Candidate {
         return Subtitles;
     }
 
-    public String getFilename(Similarity.SimResult sim) throws IOException, InterruptedException {
+    public String getFilename(Similarity.SimResult sim, String template) throws IOException, InterruptedException {
         Opensubtitles os = OsApi.isLoggedIn() ? OsApi.getInstance() : null;
         DataSet ds;
         try {
@@ -87,7 +88,8 @@ public class Candidate {
         AttributesWrapper aWrapper;
 
         if (ds != null && (aWrapper = ds.getAttributesByImdb(imdbid)) != null) {
-            newName = String.format("%s-S%02dE%02d", aWrapper.getParentTitle(), aWrapper.getSeasonNumber(), aWrapper.getEpisodeNumber());
+            //newName = String.format("%s-S%02dE%02d", aWrapper.getParentTitle(), aWrapper.getSeasonNumber(), aWrapper.getEpisodeNumber());
+            newName = Naming.getName(template, aWrapper);
         } else if (os != null) {
             FeatureQuery fq = new FeatureQuery().setImdbId(imdbid);
             Feature[] features = os.getFeatures(fq.build());
@@ -101,19 +103,19 @@ public class Candidate {
             }
             newName = newName.substring(0, newName.length() - 1);
         }
-        return MovieFile.getParent() + "/" + newName + "{imdb-tt" + String.format("%07d}.", imdbid) + split[split.length - 1];
+        return MovieFile.getParent() + "/" + newName + "." + split[split.length - 1];
     }
 
-    public String[] getSuggestions(Opensubtitles os, int num) throws IOException, InterruptedException {
+    public String[] getSuggestions(Opensubtitles os, int num, String template) throws IOException, InterruptedException {
         List<Similarity.SimResult> sim = getCandidates();
         String[] resultArr = new String[Math.min(num, sim.size())];
         for (int i = 0; i < resultArr.length; i++) {
-            resultArr[i] = getFilename(sim.get(i));
+            resultArr[i] = getFilename(sim.get(i), template);
         }
         return resultArr;
     }
 
-    public String getSuggestion(Opensubtitles os) throws IOException, InterruptedException {
-        return getSuggestions(os, 1)[0];
+    public String getSuggestion(Opensubtitles os, String template) throws IOException, InterruptedException {
+        return getSuggestions(os, 1, template)[0];
     }
 }

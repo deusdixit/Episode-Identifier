@@ -56,7 +56,7 @@ public class Identifier implements Callable<Integer> {
         }
         for (int i = 0; i < cans.length; i++) {
             if (cans[i] != null) {
-                String sugg = cans[i].getSuggestion(os);
+                String sugg = cans[i].getSuggestion(os, "{p}-S{s}E{e}");
                 System.out.println(cans[i].getAbsolutePath() + " -> " + sugg);
                 if (!dry) {
                     if (!rename) {

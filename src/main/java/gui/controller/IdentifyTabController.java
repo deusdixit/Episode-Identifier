@@ -6,6 +6,7 @@ import gui.models.RenameItem;
 import gui.models.RenamePreviewWrapper;
 import gui.tasks.IdentifyTask;
 import io.DataSet;
+import io.Extract;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -13,17 +14,19 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import subtitles.sup.Sup;
 import utils.Database;
+import utils.Drawing;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,10 +43,16 @@ public class IdentifyTabController {
     private ListView<RenamePreviewWrapper> previewList;
 
     @FXML
+    public TextField templateTextfield;
+
+    @FXML
     private ProgressBar progressBar;
 
     @FXML
     public ImageButton renameBttn;
+
+    @FXML
+    public ImageButton infoBttn;
 
     @FXML
     public ListView<RenamePreviewWrapper> renameList;
@@ -91,6 +100,11 @@ public class IdentifyTabController {
                 renameList.getItems().add(rpW);
             }
         }
+    }
+
+    @FXML
+    public void infoBttnAction() {
+
     }
 
     @FXML
@@ -176,6 +190,30 @@ public class IdentifyTabController {
         loadFilesBttn.setImage(new Image(getClass().getResourceAsStream("/icons/cross.png")), 50, 50);
         anaBttn.setImage(new Image(getClass().getResourceAsStream("/icons/ana.png")), 50, 50);
         renameBttn.setImage(new Image(getClass().getResourceAsStream("/icons/rename.png")), 50, 50);
+        infoBttn.setImage(new Image(getClass().getResourceAsStream("/icons/info.png")), 20, 20);
+        ContextMenu cm = new ContextMenu();
+        MenuItem mItem = new MenuItem("Export Timeline");
+        cm.getItems().add(mItem);
+        renameList.setContextMenu(cm);
+        mItem.setOnAction((event) -> {
+            if (renameList.getSelectionModel().getSelectedItems().size() > 0) {
+
+                RenamePreviewWrapper rpw = renameList.getSelectionModel().getSelectedItem();
+                try {
+                    int streamid = Extract.getSubtitleIds(rpw.getRenameItem().getValue().toPath())[0].streamID;
+                    Extract.extract(rpw.getRenameItem().getValue().toPath(), streamid, new File("/tmp/test.sup"));
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Save timeline");
+                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                    File file = fileChooser.showSaveDialog(mainStage);
+                    Sup tsub = new Sup(Paths.get("/tmp/test.sup"));
+                    Drawing.draw(tsub.getTimeMask(), file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
 }

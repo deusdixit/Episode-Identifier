@@ -51,7 +51,7 @@ public class Database {
     }
 
     public static void downloadAutomatic(Opensubtitles os, int imdb) throws IOException, InterruptedException, ClassNotFoundException {
-        SubtitlesQuery sq = new SubtitlesQuery().setImdbId(imdb);
+        SubtitlesQuery sq = new SubtitlesQuery().setImdbId(imdb).setHearingImpaired(SubtitlesQuery.Settings.EXCLUDE).setOrderBy(SubtitlesQuery.OrderOptions.DOWNLOAD_COUNT).setOrderDirection(SubtitlesQuery.OrderDirection.DESC);
         SubtitlesResult sr = os.getSubtitles(sq.build());
         DataSet ds = getDatabase();
         for (int i = 0; i < sr.data.length; i++) {
