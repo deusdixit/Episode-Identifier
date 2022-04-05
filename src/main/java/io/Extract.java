@@ -7,11 +7,13 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Extract {
 
-    private static int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
+    private static final int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
 
     public static void extract(Path path, int streamId, File out) throws IOException {
         boolean back = false;
@@ -57,41 +59,34 @@ public class Extract {
         Files.createDirectories(Paths.get(subsFolder));
         File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
-        for (int i = 0; i < result.length; i++) {
-            String[] cmd = new String[]{
-                    "ffmpeg",
-                    "-loglevel",
-                    "8",
-                    "-progress",
-                    "pipe:1",
-                    "-y",
-                    "-i",
-                    path.toString(),
-                    "-map",
-                    "0:" + subs[i].streamID,
-                    "-c:s",
-                    "copy",
-                    subsFolder + subs[i].streamID + ".sup"
-            };
-            Process proc = new ProcessBuilder(cmd).start();
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-            String s = null;
+        ArrayList<String> cmdList = new ArrayList<>(Arrays.asList("ffmpeg -loglevel 8 -progress pipe:1 -y -i".split(" ")));
+        cmdList.add(path.toString());
 
-            while ((s = stdInput.readLine()) != null) {
-                if (s.equals("progress=continue")) {
-                    if (back) {
-                        System.out.print("/\r");
-                    } else {
-                        System.out.print("\\\r");
-                    }
-                    back = !back;
+        for (int i = 0; i < result.length; i++) {
+            String subDest = String.format("%s%d.sup", subsFolder, subs[i].streamID);
+            cmdList.add("-map");
+            cmdList.add(String.format("0:%d", subs[i].streamID));
+            cmdList.add("-c:s");
+            cmdList.add("copy");
+            cmdList.add(subDest);
+            result[i] = new File(subDest);
+        }
+        Process proc = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()])).start();
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+        String s;
+        while ((s = stdInput.readLine()) != null) {
+            if (s.equals("progress=continue")) {
+                if (back) {
+                    System.out.print("/\r");
+                } else {
+                    System.out.print("\\\r");
                 }
+                back = !back;
             }
-            while ((s = stdError.readLine()) != null) {
-                System.out.println(s);
-            }
-            result[i] = new File(String.format("%s%d.sup", subsFolder, subs[i].streamID));
+        }
+        while ((s = stdError.readLine()) != null) {
+            System.out.println(s);
         }
         return result;
     }

@@ -30,8 +30,9 @@ public class PreviewListItem extends HBox {
                 checkBoxItem.setSelected(true);
             }
         } else {
-            errorLabel = new Label("No subtitle");
+            errorLabel = new Label(" no subtitle found");
             this.getChildren().add(errorLabel);
+            checkBoxItem.setDisable(true);
         }
     }
 
