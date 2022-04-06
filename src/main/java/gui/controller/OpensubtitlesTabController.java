@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.components.AccountDetails;
 import gui.components.ImageButton;
 import gui.models.SeasonListViewItem;
 import gui.models.TableFeature;
@@ -89,6 +90,9 @@ public class OpensubtitlesTabController {
     @FXML
     public ImageButton removeBttn;
 
+    @FXML
+    public AccountDetails accountDetails;
+
     private final SpinnerValueFactory<Integer> svfSeason = new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 1000, -1);
 
     @FXML
@@ -115,6 +119,7 @@ public class OpensubtitlesTabController {
         }
         try {
             LoginResult lr = OsApi.getInstance().login();
+            accountDetails.set(lr);
             if (lr.status == 200) {
                 return true;
             } else {

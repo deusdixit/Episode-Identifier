@@ -62,7 +62,9 @@ public class Database {
                     Path path = Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt");
                     DownloadLinkResult dlr = os.getDownloadLink(fd);
                     os.download(dlr, path);
+
                     System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
+                    System.out.println("Remaining : " + dlr.remaining);
                     TextSubtitle tsub = new TextSubtitle(path);
                     getDatabase().add(new Item(imdb, fd.file_id, new AttributesWrapper(sr.data[i].attributes.feature_details), tsub.getTimeMask()));
                     //Dataloader.loadFile(path, getDatabase());
