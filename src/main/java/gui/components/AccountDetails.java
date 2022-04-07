@@ -1,7 +1,9 @@
 package gui.components;
 
+import gui.exceptions.NoOpensubtitlesException;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.infos.UserResult;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,8 +17,10 @@ public class AccountDetails extends HBox {
 
     private ImageView imgView;
     private Label textLabel;
+    private SimpleStringProperty accountText;
 
     public AccountDetails() {
+        accountText = new SimpleStringProperty();
         imgView = new ImageView();
         imgView.setFitHeight(20);
         imgView.setFitWidth(20);
@@ -24,8 +28,12 @@ public class AccountDetails extends HBox {
         textLabel = new Label("");
         textLabel.setMaxWidth(Double.MAX_VALUE);
         textLabel.setMaxHeight(Double.MAX_VALUE);
+
+        textLabel.textProperty().bind(accountText);
+
         this.getChildren().add(imgView);
         this.getChildren().add(textLabel);
+
     }
 
     public void set(LoginResult lr) {
@@ -33,15 +41,17 @@ public class AccountDetails extends HBox {
             imgView.setImage(new Image(getClass().getResourceAsStream("/icons/green_checkmark.png")));
             try {
                 UserResult ur = OsApi.getInstance().getUserInfo();
-                textLabel.setText("Remaining downloads : " + ur.data.remaining_downloads + "/" + ur.data.allowed_downloads);
+                accountText.set("Remaining downloads : " + ur.data.remaining_downloads + "/" + ur.data.allowed_downloads);
             } catch (IOException | InterruptedException e) {
-                textLabel.setText("Allowed downloads : " + lr.user.allowed_downloads);
+                accountText.set("Allowed downloads : " + lr.user.allowed_downloads);
                 e.printStackTrace();
+            } catch (NoOpensubtitlesException noe) {
+                noe.getMainController().showOpensubtitles();
             }
 
         } else {
             imgView.setImage(new Image(getClass().getResourceAsStream("/icons/red_checkmark.png")));
-            textLabel.setText(lr.status + " Error");
+            accountText.set(lr.status + " Error");
         }
     }
 

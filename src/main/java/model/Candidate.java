@@ -1,5 +1,6 @@
 package model;
 
+import gui.exceptions.NoOpensubtitlesException;
 import hamming.Similarity;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.Episode;
@@ -74,7 +75,12 @@ public class Candidate {
     }
 
     public String getFilename(Similarity.SimResult sim, String template) throws IOException, InterruptedException {
-        Opensubtitles os = OsApi.isLoggedIn() ? OsApi.getInstance() : null;
+        Opensubtitles os;
+        try {
+            os = OsApi.isLoggedIn() ? OsApi.getInstance() : null;
+        } catch (NoOpensubtitlesException noe) {
+            os = null;
+        }
         DataSet ds;
         try {
             ds = Database.getDatabase();

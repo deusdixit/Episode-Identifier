@@ -1,11 +1,13 @@
 package gui.models;
 
 import gui.controller.OpensubtitlesTabController;
+import gui.exceptions.NoOpensubtitlesException;
 import gui.tasks.EpisodeSearchTask;
 import id.gasper.opensubtitles.models.features.TvShow;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
+import utils.OsApi;
 
 
 public class SeasonListViewItem extends CheckBox {
@@ -22,11 +24,15 @@ public class SeasonListViewItem extends CheckBox {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old_val, Boolean new_val) {
                 if (new_val) {
-                    EpisodeSearchTask task = new EpisodeSearchTask(season, main, id);
-                    Thread getEpisodesThread = new Thread(task);
-                    main.progressBar2.progressProperty().bind(task.progressProperty());
-                    getEpisodesThread.setDaemon(true);
-                    getEpisodesThread.start();
+                    try {
+                        EpisodeSearchTask task = new EpisodeSearchTask(season, main, id, OsApi.getInstance());
+                        Thread getEpisodesThread = new Thread(task);
+                        main.progressBar2.progressProperty().bind(task.progressProperty());
+                        getEpisodesThread.setDaemon(true);
+                        getEpisodesThread.start();
+                    } catch (NoOpensubtitlesException noe) {
+                        noe.getMainController().showOpensubtitles();
+                    }
                 } else {
                     main.osTable.getItems().removeIf(x -> ((TableFeature) x).getParentId().equals(id));
                     if (main.osTable.getItems().size() == 0) {

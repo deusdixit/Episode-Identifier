@@ -3,6 +3,8 @@ package gui.controller;
 import io.DataSet;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import utils.Database;
 
@@ -15,6 +17,8 @@ public class MainController implements Initializable {
 
     private Stage mainStage;
 
+    private static MainController instance = null;
+
     @FXML
     private DatabaseTabController databaseTabController;
 
@@ -24,19 +28,36 @@ public class MainController implements Initializable {
     @FXML
     private OpensubtitlesTabController opensubtitlesTabController;
 
+    @FXML
+    private TabPane mainTabPane;
+
+    @FXML
+    private Tab osTab;
+
 
     public MainController() {
-
     }
 
     public MainController(Stage s) throws IOException {
         mainStage = s;
     }
 
+    private static void setInstance(MainController mc) {
+        instance = mc;
+    }
 
+    public static MainController getInstance() {
+        return instance;
+    }
 
     public void setStage(Stage stage) {
         mainStage = stage;
+    }
+
+    public void showOpensubtitles() {
+        mainTabPane.getSelectionModel().select(osTab);
+        opensubtitlesTabController.usernameField.getStyleClass().add("error");
+        opensubtitlesTabController.passwordField.getStyleClass().add("error");
     }
 
 
@@ -68,6 +89,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setInstance(this);
         identifyTabController.setStage(mainStage);
         databaseTabController.setStage(mainStage);
     }

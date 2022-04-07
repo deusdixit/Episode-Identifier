@@ -1,5 +1,6 @@
 package gui.controller;
 
+import gui.exceptions.NoOpensubtitlesException;
 import id.gasper.opensubtitles.models.features.Episode;
 import id.gasper.opensubtitles.models.features.Feature;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
@@ -129,8 +130,11 @@ public class DatabaseTabController {
                         AttributesWrapper aWrapper = new AttributesWrapper(e.attributes);
                         i.setAttributeWrapper(aWrapper);
                     }
-                } catch (Exception ex) {
-                    System.out.println(ex.getLocalizedMessage());
+                } catch (NoOpensubtitlesException noe) {
+                    noe.getMainController().showOpensubtitles();
+                    break;
+                } catch (IOException | InterruptedException ie) {
+                    System.out.println(ie.getLocalizedMessage());
                 }
             }
             osTable.refresh();

@@ -21,7 +21,10 @@ public class MainGui extends Application {
         Parent root = loader.load();
         controller = loader.getController();
         controller.setStage(stage);
-        Scene scene = new Scene(root, 700, 700);
+        Scene scene = new Scene(root, 700, 800);
+        scene.getStylesheets().add(getClass().getResource("/css/TextfieldError.css").toExternalForm());
+        stage.setMinHeight(600);
+        stage.setMinWidth(500);
         stage.setScene(scene);
         stage.show();
     }

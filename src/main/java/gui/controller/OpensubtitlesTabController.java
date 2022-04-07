@@ -2,6 +2,7 @@ package gui.controller;
 
 import gui.components.AccountDetails;
 import gui.components.ImageButton;
+import gui.exceptions.NoOpensubtitlesException;
 import gui.models.SeasonListViewItem;
 import gui.models.TableFeature;
 import gui.tasks.DownloadTask;
@@ -49,7 +50,7 @@ public class OpensubtitlesTabController {
     public TableView osTable;
 
     @FXML
-    private PasswordField passwordField;
+    public PasswordField passwordField;
 
     @FXML
     public ProgressBar progressBar2;
@@ -73,7 +74,7 @@ public class OpensubtitlesTabController {
     private TableColumn<TableFeature, String> titleColumn;
 
     @FXML
-    private TextField usernameField;
+    public TextField usernameField;
 
     @FXML
     private TableColumn<TableFeature, String> yearColumn;
@@ -112,12 +113,13 @@ public class OpensubtitlesTabController {
     }
 
     private boolean isLoggedIn() {
-        if (OsApi.getInstance() == null && usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
-            OsApi.setInstance(new Opensubtitles(usernameField.getText(), passwordField.getText(), OsApi.getApiKey()));
-        } else {
-            return OsApi.getInstance() != null;
-        }
         try {
+            if (usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
+                OsApi.setInstance(new Opensubtitles(usernameField.getText(), passwordField.getText(), OsApi.getApiKey()));
+            } else {
+                return OsApi.getInstance() != null;
+            }
+
             LoginResult lr = OsApi.getInstance().login();
             accountDetails.set(lr);
             if (lr.status == 200) {
@@ -129,27 +131,34 @@ public class OpensubtitlesTabController {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (NoOpensubtitlesException noe) {
+            noe.getMainController().showOpensubtitles();
         }
         return false;
     }
 
     @FXML
     public void searchBttnAction() throws IOException, InterruptedException {
-        if (isLoggedIn()) {
-            String value = searchField.getText();
-            if (episodeCheckbox.isSelected() && seasonSpinner.getValue() > 0) {
-                UglyTask task = new UglyTask(this);
-                Thread uglythread = new Thread(task);
-                uglythread.setDaemon(true);
-                uglythread.start();
-            } else {
-                FeatureQuery fq = new FeatureQuery().setQuery(value);
-                fq.setType(FeatureQuery.Type.TVSHOW);
-                SeasonSearchTask task = new SeasonSearchTask(value, -1, this);
-                Thread getSeasonThread = new Thread(task);
-                getSeasonThread.setDaemon(true);
-                getSeasonThread.start();
+        try {
+            if (isLoggedIn()) {
+                String value = searchField.getText();
+                if (episodeCheckbox.isSelected() && seasonSpinner.getValue() > 0) {
+                    UglyTask task = new UglyTask(this, OsApi.getInstance());
+                    Thread uglythread = new Thread(task);
+                    uglythread.setDaemon(true);
+                    uglythread.start();
+                } else {
+                    FeatureQuery fq = new FeatureQuery().setQuery(value);
+                    fq.setType(FeatureQuery.Type.TVSHOW);
+
+                    SeasonSearchTask task = new SeasonSearchTask(value, -1, this, OsApi.getInstance());
+                    Thread getSeasonThread = new Thread(task);
+                    getSeasonThread.setDaemon(true);
+                    getSeasonThread.start();
+                }
             }
+        } catch (NoOpensubtitlesException noe) {
+            noe.getMainController().showOpensubtitles();
         }
     }
 
@@ -237,6 +246,8 @@ public class OpensubtitlesTabController {
         removeAllBttn.setImage(new Image(getClass().getResourceAsStream("/icons/remove_all.png")), 20, 20);
         removeBttn.setImage(new Image(getClass().getResourceAsStream("/icons/remove.png")), 20, 20);
         downloadBttn.setImage(new Image(getClass().getResourceAsStream("/icons/download.png")), 70, 70);
+        usernameField.textProperty().addListener((event) -> usernameField.getStyleClass().remove("error"));
+        passwordField.textProperty().addListener((event) -> passwordField.getStyleClass().remove("error"));
     }
 
 }

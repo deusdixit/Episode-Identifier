@@ -1,5 +1,6 @@
 package utils;
 
+import gui.exceptions.NoOpensubtitlesException;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.download.DownloadLinkResult;
 import id.gasper.opensubtitles.models.features.Subtitle;
@@ -50,27 +51,33 @@ public class Database {
         Dataloader.save(ds, Paths.get(DEFAULT_DB_PATH));
     }
 
-    public static void downloadAutomatic(Opensubtitles os, int imdb) throws IOException, InterruptedException, ClassNotFoundException {
-        SubtitlesQuery sq = new SubtitlesQuery().setImdbId(imdb).setHearingImpaired(SubtitlesQuery.Settings.EXCLUDE).setOrderBy(SubtitlesQuery.OrderOptions.DOWNLOAD_COUNT).setOrderDirection(SubtitlesQuery.OrderDirection.DESC);
-        SubtitlesResult sr = os.getSubtitles(sq.build());
-        DataSet ds = getDatabase();
-        for (int i = 0; i < sr.data.length; i++) {
-            String fid = sr.data[i].attributes.feature_details.feature_id + "";
-            for (int j = 0; j < sr.data[i].attributes.files.length; j++) {
-                Subtitle.FileObject fd = sr.data[i].attributes.files[j];
-                if (!ds.contains(imdb, fd.file_id)) {
-                    Path path = Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt");
-                    DownloadLinkResult dlr = os.getDownloadLink(fd);
-                    os.download(dlr, path);
+    public static DownloadLinkResult downloadAutomatic(int imdb) throws IOException, InterruptedException, ClassNotFoundException {
+        try {
+            Opensubtitles os = OsApi.getInstance();
+            SubtitlesQuery sq = new SubtitlesQuery().setImdbId(imdb).setHearingImpaired(SubtitlesQuery.Settings.EXCLUDE).setOrderBy(SubtitlesQuery.OrderOptions.DOWNLOAD_COUNT).setOrderDirection(SubtitlesQuery.OrderDirection.DESC);
+            SubtitlesResult sr = os.getSubtitles(sq.build());
+            DataSet ds = getDatabase();
+            for (int i = 0; i < sr.data.length; i++) {
+                String fid = sr.data[i].attributes.feature_details.feature_id + "";
+                for (int j = 0; j < sr.data[i].attributes.files.length; j++) {
+                    Subtitle.FileObject fd = sr.data[i].attributes.files[j];
+                    if (!ds.contains(imdb, fd.file_id)) {
+                        Path path = Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt");
+                        DownloadLinkResult dlr = os.getDownloadLink(fd);
+                        os.download(dlr, path);
 
-                    System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
-                    System.out.println("Remaining : " + dlr.remaining);
-                    TextSubtitle tsub = new TextSubtitle(path);
-                    getDatabase().add(new Item(imdb, fd.file_id, new AttributesWrapper(sr.data[i].attributes.feature_details), tsub.getTimeMask()));
-                    //Dataloader.loadFile(path, getDatabase());
-                    return;
+                        System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
+                        System.out.println("Remaining : " + dlr.remaining);
+                        TextSubtitle tsub = new TextSubtitle(path);
+                        getDatabase().add(new Item(imdb, fd.file_id, new AttributesWrapper(sr.data[i].attributes.feature_details), tsub.getTimeMask()));
+                        //Dataloader.loadFile(path, getDatabase());
+                        return dlr;
+                    }
                 }
             }
+        } catch (NoOpensubtitlesException noe) {
+            noe.getMainController().showOpensubtitles();
         }
+        return null;
     }
 }

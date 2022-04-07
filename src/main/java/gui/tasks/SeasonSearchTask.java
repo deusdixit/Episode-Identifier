@@ -9,7 +9,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
-import utils.OsApi;
 
 import java.util.Arrays;
 
@@ -23,8 +22,8 @@ public class SeasonSearchTask extends Task<Void> {
     private final TableView osTable;
     private final OpensubtitlesTabController main;
 
-    public SeasonSearchTask(String query, int season, OpensubtitlesTabController main) {
-        this.os = OsApi.getInstance();
+    public SeasonSearchTask(String query, int season, OpensubtitlesTabController main, Opensubtitles os) {
+        this.os = os;
         this.main = main;
         this.query = query;
         this.season = season;

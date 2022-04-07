@@ -2,21 +2,23 @@ package gui.tasks;
 
 import gui.controller.OpensubtitlesTabController;
 import gui.models.TableFeature;
+import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.features.Subtitle;
 import id.gasper.opensubtitles.models.subtitles.SubtitlesQuery;
 import id.gasper.opensubtitles.models.subtitles.SubtitlesResult;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import utils.OsApi;
 
 import java.util.HashSet;
 
 public class UglyTask extends Task<Void> {
 
     private final OpensubtitlesTabController main;
+    private final Opensubtitles os;
 
-    public UglyTask(OpensubtitlesTabController main) {
+    public UglyTask(OpensubtitlesTabController main, Opensubtitles os) {
         this.main = main;
+        this.os = os;
     }
 
     @Override
@@ -34,7 +36,7 @@ public class UglyTask extends Task<Void> {
         HashSet<Integer> tabu = new HashSet<>();
         for (int i = 1; i < 100; i++) {
             sq.setEpisodeNumber(i);
-            SubtitlesResult sr = OsApi.getInstance().getSubtitles(sq.build());
+            SubtitlesResult sr = os.getSubtitles(sq.build());
             if (sr.data.length <= 0) {
                 break;
             } else {
