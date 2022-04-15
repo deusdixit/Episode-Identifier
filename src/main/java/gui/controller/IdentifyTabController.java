@@ -14,6 +14,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
@@ -27,8 +28,7 @@ import utils.Drawing;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class IdentifyTabController {
@@ -80,10 +80,24 @@ public class IdentifyTabController {
         loadFilesBttn.setDisable(true);
         renameBttn.setDisable(true);
         IdentifyTask task = new IdentifyTask(this);
+        task.setOnSucceeded((e) -> {
+            sortList();
+        });
         Thread identTask = new Thread(task);
         progressBar.progressProperty().bind(task.progressProperty());
         identTask.setDaemon(true);
         identTask.start();
+    }
+
+    public void sortList() {
+        Collections.sort(previewList.getItems(), new Comparator<RenamePreviewWrapper>() {
+            @Override
+            public int compare(RenamePreviewWrapper a, RenamePreviewWrapper b) {
+                return a.getPreviewItem().getSelectedFilename().compareTo(b.getPreviewItem().getSelectedFilename());
+            }
+        });
+        renameList.refresh();
+        previewList.refresh();
     }
 
     private void addFiles(List<File> files) {
@@ -114,7 +128,6 @@ public class IdentifyTabController {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Video Files", "*.mkv", "*.mp4", "*.avi", "*.MKV", "*.MP4", "*.AVI"), new FileChooser.ExtensionFilter("All Files", "*.*"));
         List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
         addFiles(files);
-
     }
 
     /*
@@ -170,6 +183,38 @@ public class IdentifyTabController {
                 }
             }
             renameBttn.setDisable(!isDone);
+            Set<Node> nodes = renameList.lookupAll(".scroll-bar");
+            Set<Node> nodes2 = previewList.lookupAll(".scroll-bar");
+            LinkedList<ScrollBar> horizontal = new LinkedList<>();
+            LinkedList<ScrollBar> vertical = new LinkedList<>();
+            for (Node n : nodes) {
+                if (n instanceof ScrollBar) {
+                    ScrollBar s = (ScrollBar) n;
+                    switch (s.getOrientation()) {
+                        case HORIZONTAL -> horizontal.add(s);
+                        case VERTICAL -> vertical.add(s);
+                    }
+                }
+            }
+            for (Node n : nodes2) {
+                if (n instanceof ScrollBar) {
+                    ScrollBar s = (ScrollBar) n;
+                    switch (s.getOrientation()) {
+                        case HORIZONTAL:
+                            for (ScrollBar x : horizontal) {
+                                x.valueProperty().bindBidirectional(s.valueProperty());
+                            }
+                            break;
+                        case VERTICAL:
+                            for (ScrollBar x : vertical) {
+                                x.valueProperty().bindBidirectional(s.valueProperty());
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         });
         renameList.setOnDragOver(event -> {
             if (event.getGestureSource() != renameList
@@ -214,6 +259,7 @@ public class IdentifyTabController {
 
             }
         });
+
     }
 
 }
