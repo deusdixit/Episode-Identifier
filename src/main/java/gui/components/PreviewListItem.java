@@ -59,6 +59,7 @@ public class PreviewListItem extends HBox {
                         if (item == null || empty) {
                             setText(null);
                         } else {
+                            this.getStylesheets().clear();
                             if (item.sim.getAccuarcy() < 0.2) {
                                 this.getStylesheets().add(getClass().getResource("/css/ComboBoxItemRed.css").toExternalForm());
                             } else {

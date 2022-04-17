@@ -27,6 +27,7 @@ import utils.OsApi;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.prefs.Preferences;
 
 public class OpensubtitlesTabController {
 
@@ -73,6 +74,8 @@ public class OpensubtitlesTabController {
 
     private LinkedList<ImageButton> allButtons;
 
+    private Preferences prefs;
+
     @FXML
     public void checkLoginAction() {
         isLoggedIn();
@@ -80,6 +83,8 @@ public class OpensubtitlesTabController {
 
     private boolean isLoggedIn() {
         try {
+            prefs.put("username", usernameField.getText());
+            prefs.put("password", passwordField.getText());
             if (usernameField.getText().length() > 0 && passwordField.getText().length() > 0) {
                 OsApi.setInstance(new Opensubtitles(usernameField.getText(), passwordField.getText(), OsApi.getApiKey()));
             } else {
@@ -134,6 +139,11 @@ public class OpensubtitlesTabController {
         }
     }
 
+    private void setPreferences() {
+        prefs = Preferences.userRoot().node(getClass().getName());
+        usernameField.setText(prefs.get("username", ""));
+        passwordField.setText(prefs.get("password", ""));
+    }
 
     public DataSet getDB() {
         try {
@@ -166,6 +176,7 @@ public class OpensubtitlesTabController {
 
     @FXML
     public void initialize() {
+        setPreferences();
         allButtons = new LinkedList<>();
         dataTTview.setShowRoot(false);
         ttRoot = new TreeItem<>();
