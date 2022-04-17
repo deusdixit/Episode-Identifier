@@ -127,7 +127,6 @@ public class OpensubtitlesTabController {
         }
     }
 
-
     @FXML
     void searchFieldChanged(KeyEvent event) {
 
@@ -172,7 +171,6 @@ public class OpensubtitlesTabController {
         downloadTask.setDaemon(true);
         downloadTask.start();
     }
-
 
     @FXML
     public void initialize() {

@@ -1,5 +1,7 @@
 package io;
 
+import utils.Settings;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +19,9 @@ public class Extract {
 
     public static void extract(Path path, int streamId, File out) throws IOException {
         boolean back = false;
-
+        String ffmpeg = Settings.getInstace().getFfmpegPath();
         String[] cmd = new String[]{
-                "ffmpeg",
+                ffmpeg,
                 "-loglevel",
                 "8",
                 "-progress",
@@ -54,12 +56,13 @@ public class Extract {
     }
 
     public static File[] extractAll(Path path) throws IOException {
+        String ffmpeg = Settings.getInstace().getFfmpegPath();
         FfprobeResult[] subs = getSubtitleIds(path);
         String subsFolder = String.format("./tmp/%s/", path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""));
         Files.createDirectories(Paths.get(subsFolder));
         File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
-        ArrayList<String> cmdList = new ArrayList<>(Arrays.asList("ffmpeg -loglevel 8 -progress pipe:1 -y -i".split(" ")));
+        ArrayList<String> cmdList = new ArrayList<>(Arrays.asList(ffmpeg + " -loglevel 8 -progress pipe:1 -y -i".split(" ")));
         cmdList.add(path.toString());
 
         for (int i = 0; i < result.length; i++) {

@@ -32,11 +32,10 @@
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="900.0" minWidth="700.0"
-      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.MainController">
     <children>
         <TabPane fx:id="mainTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
@@ -63,6 +62,11 @@
                                             VBox.vgrow="ALWAYS"/>
                             </children>
                         </VBox>
+                    </content>
+                </Tab>
+                <Tab text="Settings">
+                    <content>
+                        <fx:include maxWidth="1.7976931348623157E308" source="Settings.fxml"/>
                     </content>
                 </Tab>
             </tabs>
