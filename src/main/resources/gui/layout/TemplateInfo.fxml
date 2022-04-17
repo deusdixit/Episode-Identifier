@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<fx:root maxHeight="300.0" maxWidth="300.0" minHeight="300.0" minWidth="300.0" prefHeight="300.0" prefWidth="300.0"
+         type="GridPane" xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="{p} = Parent Title"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="{y} = Year"
+               GridPane.rowIndex="1"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="{s} = Season" GridPane.rowIndex="2"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="{e} = Episode" GridPane.rowIndex="3"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="{t} = Tmdb ID" GridPane.rowIndex="4"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="{i} = Imdb ID" GridPane.rowIndex="5"/>
+    </children>
+</fx:root>

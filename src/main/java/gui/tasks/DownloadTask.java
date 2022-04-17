@@ -20,6 +20,7 @@ public class DownloadTask extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
+        main.setDisableDownloadButtons(true);
         int counter = 0;
         for (TreeItemWrapper tiw : items) {
             if (tiw.type == TreeItemWrapper.Type.EPISODE) {
@@ -27,16 +28,17 @@ public class DownloadTask extends Task<Void> {
                     Database.downloadAutomatic(Integer.parseInt(tiw.getImdb()));
                     updateProgress(++counter, items.size());
                 } catch (IOException ioe) {
-
+                    ioe.printStackTrace();
                 } catch (ClassNotFoundException cnfe) {
-
+                    cnfe.printStackTrace();
                 } catch (InterruptedException ie) {
-
+                    ie.printStackTrace();
                 }
             }
         }
         updateProgress(0, 0);
         main.searchBttn.setDisable(false);
+        main.setDisableDownloadButtons(false);
         return null;
     }
 }

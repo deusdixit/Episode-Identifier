@@ -25,8 +25,8 @@ public class SeasonSearchTask extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
+        main.searchBttn.setDisable(true);
         FeatureQuery fq = new FeatureQuery().setQuery(query).setType(FeatureQuery.Type.TVSHOW);
-
         TvShow[] tvshows = Arrays.stream(os.getFeatures(fq.build())).map(i -> (TvShow) i).toArray(TvShow[]::new);
         Platform.runLater(new Runnable() {
             @Override
@@ -37,6 +37,7 @@ public class SeasonSearchTask extends Task<Void> {
 
             }
         });
+        main.searchBttn.setDisable(false);
         return null;
     }
 }

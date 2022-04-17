@@ -71,6 +71,7 @@ public class OpensubtitlesTabController {
     @FXML
     public AccountDetails accountDetails;
 
+    private LinkedList<ImageButton> allButtons;
 
     @FXML
     public void checkLoginAction() {
@@ -127,6 +128,12 @@ public class OpensubtitlesTabController {
 
     }
 
+    public void setDisableDownloadButtons(boolean value) {
+        for (ImageButton b : allButtons) {
+            b.setDisable(value);
+        }
+    }
+
 
     public DataSet getDB() {
         try {
@@ -156,8 +163,10 @@ public class OpensubtitlesTabController {
         downloadTask.start();
     }
 
+
     @FXML
     public void initialize() {
+        allButtons = new LinkedList<>();
         dataTTview.setShowRoot(false);
         ttRoot = new TreeItem<>();
         dataTTview.setRoot(ttRoot);
@@ -167,6 +176,7 @@ public class OpensubtitlesTabController {
             @Override
             public ObservableValue<ImageButton> call(TreeTableColumn.CellDataFeatures<TreeItemWrapper, ImageButton> item) {
                 ImageButton imgBttn = new ImageButton();
+
                 imgBttn.setImage(new Image(getClass().getResourceAsStream("/icons/download.png")), 20, 20);
                 imgBttn.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -177,6 +187,8 @@ public class OpensubtitlesTabController {
                 if (item.getValue().getValue().type == TreeItemWrapper.Type.TVSHOW) {
                     imgBttn.setVisible(false);
                     imgBttn.setDisable(true);
+                } else {
+                    allButtons.add(imgBttn);
                 }
                 return new SimpleObjectProperty<ImageButton>(imgBttn);
             }

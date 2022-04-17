@@ -1,6 +1,7 @@
 package gui.controller;
 
 import gui.components.ImageButton;
+import gui.components.TemplateInfo;
 import gui.models.ListFactoryItem;
 import gui.models.RenameItem;
 import gui.models.RenamePreviewWrapper;
@@ -15,6 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
@@ -118,7 +120,10 @@ public class IdentifyTabController {
 
     @FXML
     public void infoBttnAction() {
-
+        TemplateInfo ti = new TemplateInfo();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(ti));
+        stage.show();
     }
 
     @FXML
