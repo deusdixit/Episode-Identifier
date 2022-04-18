@@ -16,6 +16,7 @@ import java.util.LinkedList;
 public class Extract {
 
     private static final int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
+    private static final String TEMP_FOLDER = "tmp";
 
     public static void extract(Path path, int streamId, File out) throws IOException {
         boolean back = false;
@@ -58,7 +59,7 @@ public class Extract {
     public static File[] extractAll(Path path) throws IOException {
         String ffmpeg = Settings.getInstace().getFfmpegPath();
         FfprobeResult[] subs = getSubtitleIds(path);
-        String subsFolder = String.format("./tmp/%s/", path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""));
+        String subsFolder = String.format("%s%s%s%s", TEMP_FOLDER, File.pathSeparator, path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""), File.pathSeparator);
         Files.createDirectories(Paths.get(subsFolder));
         File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
@@ -95,8 +96,9 @@ public class Extract {
     }
 
     public static FfprobeResult[] getSubtitleIds(Path path) throws IOException {
+        String ffprobe = Settings.getInstace().getFfprobePath();
         String[] cmd = new String[]{
-                "ffprobe",
+                ffprobe,
                 "-loglevel",
                 "error",
                 "-select_streams",

@@ -7,6 +7,7 @@ import hamming.Similarity;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import model.Candidate;
+import utils.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,9 @@ public class IdentifyTask extends Task<Void> {
                         rpItem.setPreviewItem(combo);
                     }
                 });
-
+                if (!Settings.getInstace().getKeepTemporary()) {
+                    can.deleteSubtitleFiles();
+                }
             } catch (Exception ex) {
                 System.out.println(ex.getLocalizedMessage());
                 System.out.println();

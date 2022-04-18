@@ -124,4 +124,13 @@ public class Candidate {
     public String getSuggestion(Opensubtitles os, String template) throws IOException, InterruptedException {
         return getSuggestions(os, 1, template)[0];
     }
+
+    public void deleteSubtitleFiles() {
+        if (SubtitleFiles != null) {
+            for (File f : SubtitleFiles) {
+                f.delete();
+            }
+            SubtitleFiles = null;
+        }
+    }
 }

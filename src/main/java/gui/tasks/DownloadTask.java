@@ -36,6 +36,7 @@ public class DownloadTask extends Task<Void> {
                 }
             }
         }
+        Database.saveDatabase(Database.getDatabase());
         updateProgress(0, 0);
         main.searchBttn.setDisable(false);
         main.setDisableDownloadButtons(false);

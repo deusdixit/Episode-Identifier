@@ -12,14 +12,15 @@ import io.Dataloader;
 import io.Item;
 import subtitles.text.TextSubtitle;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Database {
 
-    private static final String DEFAULT_DB_PATH = "./database.ser";
-    private static final String DEFAULT_SUB_PATH = "./subs/";
+    private static final String DEFAULT_DB_PATH = "database.ser";
+    private static final String DEFAULT_SUB_PATH = "subs";
     private static DataSet ds = null;
 
     public static DataSet getDatabase() throws IOException, ClassNotFoundException {
@@ -62,10 +63,9 @@ public class Database {
                 for (int j = 0; j < sr.data[i].attributes.files.length; j++) {
                     Subtitle.FileObject fd = sr.data[i].attributes.files[j];
                     if (!ds.contains(imdb, fd.file_id)) {
-                        Path path = Paths.get("./subs/" + fid + "/" + fid + "-" + imdb + "-" + fd.file_id + ".srt");
+                        Path path = Paths.get(DEFAULT_SUB_PATH + File.pathSeparator + fid + File.pathSeparator + fid + "-" + imdb + "-" + fd.file_id + ".srt");
                         DownloadLinkResult dlr = os.getDownloadLink(fd);
                         os.download(dlr, path);
-
                         System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
                         System.out.println("Remaining : " + dlr.remaining);
                         TextSubtitle tsub = new TextSubtitle(path);

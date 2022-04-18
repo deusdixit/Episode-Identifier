@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import subtitles.sup.Sup;
 import utils.Database;
 import utils.Drawing;
+import utils.Settings;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,17 +79,29 @@ public class IdentifyTabController {
 
     @FXML
     void anaAction(ActionEvent event) {
-        anaBttn.setDisable(true);
-        loadFilesBttn.setDisable(true);
-        renameBttn.setDisable(true);
-        IdentifyTask task = new IdentifyTask(this);
-        task.setOnSucceeded((e) -> {
-            sortList();
-        });
-        Thread identTask = new Thread(task);
-        progressBar.progressProperty().bind(task.progressProperty());
-        identTask.setDaemon(true);
-        identTask.start();
+        boolean ffp = Settings.getInstace().isFfprobeValid();
+        boolean ffm = Settings.getInstace().isFfmpegValid();
+        if (ffm && ffp) {
+            anaBttn.setDisable(true);
+            loadFilesBttn.setDisable(true);
+            renameBttn.setDisable(true);
+            IdentifyTask task = new IdentifyTask(this);
+            task.setOnSucceeded((e) -> {
+                sortList();
+            });
+            Thread identTask = new Thread(task);
+            progressBar.progressProperty().bind(task.progressProperty());
+            identTask.setDaemon(true);
+            identTask.start();
+        } else {
+            if (!ffm && !ffp) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "FFMPEG and FFPROBE error. Check File -> Settings", ButtonType.OK);
+            } else if (!ffm) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "FFMPEG error. Check File -> Settings", ButtonType.OK);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "FFPROBE error. Check File -> Settings", ButtonType.OK);
+            }
+        }
     }
 
     public void sortList() {
@@ -196,8 +209,12 @@ public class IdentifyTabController {
                 if (n instanceof ScrollBar) {
                     ScrollBar s = (ScrollBar) n;
                     switch (s.getOrientation()) {
-                        case HORIZONTAL -> horizontal.add(s);
-                        case VERTICAL -> vertical.add(s);
+                        case HORIZONTAL:
+                            horizontal.add(s);
+                            break;
+                        case VERTICAL:
+                            vertical.add(s);
+                            break;
                     }
                 }
             }

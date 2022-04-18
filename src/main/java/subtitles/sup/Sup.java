@@ -152,12 +152,24 @@ public class Sup extends Subtitle {
         obj.sizeOfSegment = sizeOfSegment;
 
         switch (type) {
-            case 0x14 -> obj = pds(index, obj);
-            case 0x15 -> obj = ods(index, obj);
-            case 0x16 -> obj = pcs(index, obj);
-            case 0x17 -> obj = wds(index, obj);
-            case 0x80 -> obj = end(index, obj);
-            default -> System.out.println("Found unknown type : " + type);
+            case 0x14:
+                obj = pds(index, obj);
+                break;
+            case 0x15:
+                obj = ods(index, obj);
+                break;
+            case 0x16:
+                obj = pcs(index, obj);
+                break;
+            case 0x17:
+                obj = wds(index, obj);
+                break;
+            case 0x80:
+                obj = end(index, obj);
+                break;
+            default:
+                System.out.println("Found unknown type : " + type);
+                break;
         }
         //System.out.println("Size of the segment : " + sizeOfSegment + " - Segment type : " + type);
         return obj;

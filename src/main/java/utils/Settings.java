@@ -1,5 +1,8 @@
 package utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.prefs.Preferences;
 
 public class Settings {
@@ -12,6 +15,8 @@ public class Settings {
     private final String FFPROBE_KEY = "ffprobe_path";
     private final String KEEP_TEMPORARY_KEY = "del_temp";
 
+    private final String OS;
+
     public static Settings getInstace() {
         if (settings == null) {
             settings = new Settings();
@@ -21,10 +26,73 @@ public class Settings {
 
     public Settings() {
         prefs = Preferences.userRoot().node(getClass().getName());
+        OS = System.getProperty("os.name");
+    }
+
+    public boolean isFfmpegValid() {
+        try {
+            Process p = new ProcessBuilder(getFfmpegPath(), "-version").start();
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String s = null;
+            String output = "";
+            while ((s = stdInput.readLine()) != null) {
+                output += s;
+            }
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            if (output.contains("ffmpeg version")) {
+                return true;
+            }
+        } catch (IOException ioe) {
+            return false;
+        }
+        return false;
+    }
+
+    public boolean isFfprobeValid() {
+        try {
+            Process p = new ProcessBuilder(getFfprobePath(), "-version").start();
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String s = null;
+            String output = "";
+            while ((s = stdInput.readLine()) != null) {
+                output += s;
+            }
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            if (output.contains("ffprobe version")) {
+                return true;
+            }
+        } catch (IOException ioe) {
+            return false;
+        }
+        return false;
     }
 
     public String getFfmpegPath() {
-        return prefs.get(FFMPEG_KEY, "/usr/bin/ffmpeg");
+        String defaultValue = "";
+        if (OS.contains("win")) {
+            if (cmdExists("ffmpeg")) {
+                defaultValue = "ffmpeg";
+            } else if (cmdExists("ffmpeg.exe")) {
+                defaultValue = "ffmpeg.exe";
+            }
+        } else {
+            if (cmdExists("/usr/bin/ffmpeg")) {
+                defaultValue = "/usr/bin/ffmpeg";
+            } else if (cmdExists("/bin/ffmpeg")) {
+                defaultValue = "/bin/ffmpeg";
+            } else if (cmdExists("/usr/local/bin/ffmpeg")) {
+                defaultValue = "/usr/local/bin/ffmpeg";
+            } else if (cmdExists("ffmpeg")) {
+                defaultValue = "ffmpeg";
+            }
+        }
+        return prefs.get(FFMPEG_KEY, defaultValue);
     }
 
     public void putFfmpegPath(String path) {
@@ -32,7 +100,25 @@ public class Settings {
     }
 
     public String getFfprobePath() {
-        return prefs.get(FFPROBE_KEY, "/usr/bin/ffprobe");
+        String defaultValue = "";
+        if (OS.contains("win")) {
+            if (cmdExists("ffprobe")) {
+                defaultValue = "ffprobe";
+            } else if (cmdExists("ffprobe.exe")) {
+                defaultValue = "ffprobe.exe";
+            }
+        } else {
+            if (cmdExists("/usr/bin/ffprobe")) {
+                defaultValue = "/usr/bin/ffprobe";
+            } else if (cmdExists("/bin/ffprobe")) {
+                defaultValue = "/bin/ffprobe";
+            } else if (cmdExists("/usr/local/bin/ffprobe")) {
+                defaultValue = "/usr/local/bin/ffprobe";
+            } else if (cmdExists("ffprobe")) {
+                defaultValue = "ffprobe";
+            }
+        }
+        return prefs.get(FFPROBE_KEY, defaultValue);
     }
 
     public void putFfprobePath(String path) {
@@ -45,6 +131,15 @@ public class Settings {
 
     public void putKeepTemporary(boolean value) {
         prefs.putBoolean(KEEP_TEMPORARY_KEY, value);
+    }
+
+    private boolean cmdExists(String cmd) {
+        try {
+            Process p = new ProcessBuilder(cmd).start();
+            return true;
+        } catch (IOException ioe) {
+            return false;
+        }
     }
 
 }

@@ -20,7 +20,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Subtitles" target="17" />
+      <module name="Subtitles" target="14" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
