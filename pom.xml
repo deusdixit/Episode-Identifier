@@ -15,19 +15,13 @@
         <exec.mainClass>base.Main</exec.mainClass>
         <javafx.version>18</javafx.version>
     </properties>
-
     <repositories>
         <repository>
-            <id>mvn-repo</id>
-            <url>https://github.com/deusdixit/Opensubtitles/master</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
 
     <dependencies>
         <dependency>
@@ -46,9 +40,9 @@
             <version>4.6.3</version>
         </dependency>
         <dependency>
-            <groupId>id.gasper.opensubtitles</groupId>
+            <groupId>com.github.deusdixit</groupId>
             <artifactId>Opensubtitles</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>v.1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
