@@ -94,13 +94,15 @@ public class IdentifyTabController {
             identTask.setDaemon(true);
             identTask.start();
         } else {
+            Alert alert;
             if (!ffm && !ffp) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "FFMPEG and FFPROBE error. Check File -> Settings", ButtonType.OK);
+                alert = new Alert(Alert.AlertType.ERROR, "FFMPEG and FFPROBE error. Check File -> Settings", ButtonType.OK);
             } else if (!ffm) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "FFMPEG error. Check File -> Settings", ButtonType.OK);
+                alert = new Alert(Alert.AlertType.ERROR, "FFMPEG error. Check File -> Settings", ButtonType.OK);
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "FFPROBE error. Check File -> Settings", ButtonType.OK);
+                alert = new Alert(Alert.AlertType.ERROR, "FFPROBE error. Check File -> Settings", ButtonType.OK);
             }
+            alert.show();
         }
     }
 
