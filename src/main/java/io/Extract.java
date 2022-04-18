@@ -59,7 +59,7 @@ public class Extract {
     public static File[] extractAll(Path path) throws IOException {
         String ffmpeg = Settings.getInstace().getFfmpegPath();
         FfprobeResult[] subs = getSubtitleIds(path);
-        String subsFolder = String.format("%s%s%s%s", TEMP_FOLDER, File.pathSeparator, path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""), File.pathSeparator);
+        String subsFolder = String.format("%s%s%s%s", TEMP_FOLDER, File.separator, path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""), File.separator);
         Files.createDirectories(Paths.get(subsFolder));
         File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;

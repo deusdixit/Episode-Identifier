@@ -63,7 +63,7 @@ public class Database {
                 for (int j = 0; j < sr.data[i].attributes.files.length; j++) {
                     Subtitle.FileObject fd = sr.data[i].attributes.files[j];
                     if (!ds.contains(imdb, fd.file_id)) {
-                        Path path = Paths.get(DEFAULT_SUB_PATH + File.pathSeparator + fid + File.pathSeparator + fid + "-" + imdb + "-" + fd.file_id + ".srt");
+                        Path path = Paths.get(DEFAULT_SUB_PATH + File.separator + fid + File.separator + fid + "-" + imdb + "-" + fd.file_id + ".srt");
                         DownloadLinkResult dlr = os.getDownloadLink(fd);
                         os.download(dlr, path);
                         System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
