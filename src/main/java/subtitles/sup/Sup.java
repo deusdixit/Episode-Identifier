@@ -1,6 +1,8 @@
 package subtitles.sup;
 
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import subtitles.Subtitle;
 import subtitles.sup.model.*;
 
@@ -23,11 +25,13 @@ public class Sup extends Subtitle {
     private PGS[] segments = null;
     private Map<Integer, BufferedImage> allImages;
 
+    private static final Logger log = LoggerFactory.getLogger(Sup.class);
+
     public Sup(Path filePath) {
         try {
             data = Files.readAllBytes(filePath);
         } catch (IOException ioex) {
-            System.out.println("IOException : " + ioex.getLocalizedMessage());
+            log.error("IOException Sup(Path)");
         }
     }
 
@@ -85,7 +89,7 @@ public class Sup extends Subtitle {
             File folder = new File(filename + "_images");
             if (!folder.exists()) {
                 if (!folder.mkdir()) {
-                    System.out.println("Couldn't create new folder for image files...");
+                    log.error("Couldn't create new folder for image files...");
                     System.exit(1);
                 }
             }
@@ -101,8 +105,8 @@ public class Sup extends Subtitle {
             String json = gson.toJson(segments);
             Files.write(filepath, json.getBytes());
         } catch (IOException ioex) {
-            System.out.println("IOException while writing json...");
-            System.out.println(ioex.getMessage());
+            log.error("IOException while writing json...");
+            log.error(ioex.getMessage());
         }
     }
 
@@ -168,7 +172,7 @@ public class Sup extends Subtitle {
                 obj = end(index, obj);
                 break;
             default:
-                System.out.println("Found unknown type : " + type);
+                log.warn("Found unknown type : " + type);
                 break;
         }
         //System.out.println("Size of the segment : " + sizeOfSegment + " - Segment type : " + type);

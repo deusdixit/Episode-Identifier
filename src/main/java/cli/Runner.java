@@ -23,12 +23,20 @@ public class Runner implements Callable<Integer> {
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display help")
     private boolean helpRequested = false;
 
-    @CommandLine.Option(names = {"-g", "--gui"}, description = "display gui")
-    private boolean gui = false;
+    @CommandLine.Option(names = {"-ng", "--nogui"}, description = "display gui")
+    private boolean nogui = false;
+
+    @CommandLine.Option(names = {"-v", "--debug"}, description = "Debugging")
+    private boolean debug = false;
 
     public Integer call() {
+        if (debug) {
+            System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        }
         MainGui mw = new MainGui();
         mw.show();
         return 0;
     }
+
+
 }

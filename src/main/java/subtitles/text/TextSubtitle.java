@@ -1,5 +1,8 @@
 package subtitles.text;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,11 +18,13 @@ public class TextSubtitle {
     private int[] timestamps = null;
     private BitSet TimeMask = null;
 
+    private static final Logger log = LoggerFactory.getLogger(TextSubtitle.class);
+
     public TextSubtitle(Path path) {
         try {
             data = Files.readAllLines(path);
         } catch (IOException ioex) {
-            System.out.println("IOException : " + ioex.getLocalizedMessage());
+            log.error("IOException TextSubtitle(Path)");
         }
     }
 

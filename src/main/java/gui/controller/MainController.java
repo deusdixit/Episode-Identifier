@@ -6,6 +6,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Database;
 
 import java.io.IOException;
@@ -34,6 +36,8 @@ public class MainController implements Initializable {
     @FXML
     private Tab osTab;
 
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
 
     public MainController() {
     }
@@ -61,27 +65,13 @@ public class MainController implements Initializable {
     }
 
 
-    public void loadMenuAction() {
-        try {
-            Database.loadSubtitles();
-            databaseTabController.clear();
-            databaseTabController.addAll(Database.getDatabase().get());
-        } catch (IOException iex) {
-
-        } catch (ClassNotFoundException cnfe) {
-
-        }
-    }
-
-
-
     public DataSet getDB() {
         try {
             return Database.getDatabase();
         } catch (IOException ioe) {
-            System.out.println();
+            log.error("IOException getDB()");
         } catch (ClassNotFoundException cnfe) {
-            System.out.println();
+            log.error("ClassNotFoundException getDB()");
         }
         return null;
     }

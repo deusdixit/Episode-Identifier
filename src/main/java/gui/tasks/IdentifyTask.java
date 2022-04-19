@@ -7,6 +7,8 @@ import hamming.Similarity;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import model.Candidate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Settings;
 
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.List;
 public class IdentifyTask extends Task<Void> {
 
     private final IdentifyTabController main;
+
+    private static final Logger log = LoggerFactory.getLogger(IdentifyTask.class);
 
     public IdentifyTask(IdentifyTabController main) {
         this.main = main;
@@ -42,8 +46,7 @@ public class IdentifyTask extends Task<Void> {
                     can.deleteSubtitleFiles();
                 }
             } catch (Exception ex) {
-                System.out.println(ex.getLocalizedMessage());
-                System.out.println();
+                log.error(ex.toString());
             }
         }
         updateProgress(0, 0);

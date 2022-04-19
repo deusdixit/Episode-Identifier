@@ -22,6 +22,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Database;
 import utils.OsApi;
 
@@ -76,6 +78,8 @@ public class OpensubtitlesTabController {
 
     private Preferences prefs;
 
+    private static final Logger log = LoggerFactory.getLogger(OpensubtitlesTabController.class);
+
     @FXML
     public void checkLoginAction() {
         isLoggedIn();
@@ -97,11 +101,12 @@ public class OpensubtitlesTabController {
                 return true;
             } else {
                 OsApi.setInstance(null);
+                log.error("Login failed with Error Code " + lr.status);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IOException isLoggedIn()");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("InterruptedException isLoggedIn()");
         } catch (NoOpensubtitlesException noe) {
             noe.getMainController().showOpensubtitles();
         }
@@ -148,9 +153,9 @@ public class OpensubtitlesTabController {
         try {
             return Database.getDatabase();
         } catch (IOException ioe) {
-            System.out.println();
+            log.error("IOException getDB()");
         } catch (ClassNotFoundException cnfe) {
-            System.out.println();
+            log.error("ClassNotFoundException getDB()");
         }
         return null;
     }

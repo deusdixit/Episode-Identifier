@@ -23,6 +23,8 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import subtitles.sup.Sup;
 import utils.Database;
 import utils.Drawing;
@@ -62,6 +64,8 @@ public class IdentifyTabController {
 
     private Stage mainStage;
 
+    private static final Logger log = LoggerFactory.getLogger(IdentifyTabController.class);
+
     public void setStage(Stage s) {
         mainStage = s;
     }
@@ -70,9 +74,9 @@ public class IdentifyTabController {
         try {
             return Database.getDatabase();
         } catch (IOException ioe) {
-            System.out.println();
+            log.error("IOException getDB()");
         } catch (ClassNotFoundException cnfe) {
-            System.out.println();
+            log.error("ClassNotFoundException getDB()");
         }
         return null;
     }
@@ -128,7 +132,9 @@ public class IdentifyTabController {
                         previewList.refresh();
                     }
                 });
-                renameList.getItems().add(rpW);
+                if (!renameList.getItems().contains(rpW)) {
+                    renameList.getItems().add(rpW);
+                }
             }
         }
     }
@@ -156,7 +162,7 @@ public class IdentifyTabController {
     @FXML
     void renameAction(ActionEvent event) {
         if (renameList.getItems().size() != previewList.getItems().size()) {
-            System.out.println("Error");
+            log.error("RenameList doesn't match PreviewList");
         } else {
             // Rename all files to distinct temporary file names to prevent data loss
             File[] tmpFiles = new File[renameList.getItems().size()];
@@ -174,9 +180,9 @@ public class IdentifyTabController {
                     File oldFile = tmpFiles[i];
                     File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
                     if (oldFile.renameTo(newFile)) {
-                        System.out.println("Renamed to " + newFile);
+                        log.debug("Renamed " + oldFile.toString() + " to " + newFile.toString());
                     } else {
-                        System.out.println("Error");
+                        log.error("Renaming file " + oldFile.toString() + " to " + newFile.toString() + " failed");
                     }
                 }
             }

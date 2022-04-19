@@ -10,6 +10,8 @@ import io.AttributesWrapper;
 import io.DataSet;
 import io.Dataloader;
 import io.Item;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import subtitles.text.TextSubtitle;
 
 import java.io.File;
@@ -22,6 +24,8 @@ public class Database {
     private static final String DEFAULT_DB_PATH = "database.ser";
     private static final String DEFAULT_SUB_PATH = "subs";
     private static DataSet ds = null;
+
+    private static final Logger log = LoggerFactory.getLogger(Database.class);
 
     public static DataSet getDatabase() throws IOException, ClassNotFoundException {
         if (ds != null) {
@@ -66,8 +70,8 @@ public class Database {
                         Path path = Paths.get(DEFAULT_SUB_PATH + File.separator + fid + File.separator + fid + "-" + imdb + "-" + fd.file_id + ".srt");
                         DownloadLinkResult dlr = os.getDownloadLink(fd);
                         os.download(dlr, path);
-                        System.out.println("Downloading " + fd.file_id + " Message : " + dlr.message);
-                        System.out.println("Remaining : " + dlr.remaining);
+                        log.debug("Downloading " + fd.file_id + " Message : " + dlr.message);
+                        log.debug("Remaining : " + dlr.remaining);
                         TextSubtitle tsub = new TextSubtitle(path);
                         getDatabase().add(new Item(imdb, fd.file_id, new AttributesWrapper(sr.data[i].attributes.feature_details), tsub.getTimeMask()));
                         //Dataloader.loadFile(path, getDatabase());

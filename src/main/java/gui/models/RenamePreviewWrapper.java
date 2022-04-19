@@ -7,7 +7,7 @@ import javafx.beans.Observable;
 import java.io.File;
 import java.util.List;
 
-public class RenamePreviewWrapper implements Observable {
+public class RenamePreviewWrapper implements Observable, Comparable<RenamePreviewWrapper> {
 
     private RenameItem renameItem;
     private PreviewItem previewItem;
@@ -64,5 +64,20 @@ public class RenamePreviewWrapper implements Observable {
     public void removeListener(InvalidationListener invalidationListener) {
         renameItem.removeListener(invalidationListener);
         previewItem.addListener(invalidationListener);
+    }
+
+    @Override
+    public int compareTo(RenamePreviewWrapper renamePreviewWrapper) {
+        return this.renameItem.getValue().compareTo(renamePreviewWrapper.renameItem.getValue());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof RenamePreviewWrapper) {
+            RenamePreviewWrapper c = (RenamePreviewWrapper) obj;
+            return this.compareTo(c) == 0;
+        } else {
+            return false;
+        }
     }
 }

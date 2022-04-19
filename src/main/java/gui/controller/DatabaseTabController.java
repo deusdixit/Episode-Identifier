@@ -13,6 +13,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Database;
 import utils.Drawing;
 import utils.OsApi;
@@ -50,6 +52,8 @@ public class DatabaseTabController {
     private TableView<Item> osTable;
 
     private Stage mainStage;
+
+    private static final Logger log = LoggerFactory.getLogger(DatabaseTabController.class);
 
 
     public DatabaseTabController() {
@@ -94,9 +98,9 @@ public class DatabaseTabController {
         try {
             data = FXCollections.observableList(Database.getDatabase().get());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IOException Database.getDatabase");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            log.error("ClassNotFoundException Database.getDatabase");
         }
         osTable.setItems(data);
         ContextMenu cm = new ContextMenu();

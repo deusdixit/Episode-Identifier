@@ -6,6 +6,8 @@ import org.ebml.MasterElement;
 import org.ebml.ProtoType;
 import org.ebml.io.FileDataSource;
 import org.ebml.matroska.MatroskaDocTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import subtitles.text.TextSubtitle;
 
 import java.io.*;
@@ -16,18 +18,18 @@ import java.util.stream.Collectors;
 
 public class Dataloader {
 
+    private static final Logger log = LoggerFactory.getLogger(Dataloader.class);
+
     public static int[][] loadInt(Path path) {
         try {
             List<Path> srtFiles = Files.walk(path).filter(p -> p.toFile().isFile() && p.toString().endsWith("srt")).collect(Collectors.toList());
-            srtFiles = srtFiles.subList(0, srtFiles.size() > 1000 ? 1000 : srtFiles.size());
+            //srtFiles = srtFiles.subList(0, srtFiles.size() > 1000 ? 1000 : srtFiles.size());
             int[][] data = new int[srtFiles.size()][];
             int i = 0;
             for (Path p : srtFiles) {
                 TextSubtitle tsub = new TextSubtitle(p);
                 data[i++] = tsub.getTimestamps();
-                if (i % 100 == 0) {
-                    System.out.println(String.format("[%09d/%09d]", i, srtFiles.size()));
-                }
+                log.debug(String.format("[%09d/%09d]", i, srtFiles.size()));
             }
             return data;
         } catch (IOException e) {
@@ -48,7 +50,7 @@ public class Dataloader {
             imdbid = Integer.parseInt(path.getFileName().toString().split("\\.")[0].split("-")[1]);
             fileid = Integer.parseInt(path.getFileName().toString().split("\\.")[0].split("-")[2]);
         } catch (NumberFormatException ex) {
-            System.err.println("Error reading IMDB from file " + path.toString());
+            log.error("Error reading IMDB from file " + path.toString());
             return ds;
         }
         if (!ds.contains(imdbid, fileid)) {
@@ -68,11 +70,12 @@ public class Dataloader {
             for (Path p : srtFiles) {
                 loadFile(p, ds);
                 i++;
-                System.out.println(String.format("[%09d/%09d]", i, srtFiles.size()));
+                log.debug(String.format("[%09d/%09d]", i, srtFiles.size()));
             }
             //System.out.println(String.format("%d Kilobytes", bitCount / 8 / 1024));
             return ds;
         } catch (IOException e) {
+            log.error(e.getLocalizedMessage());
             e.printStackTrace();
         }
         return null;

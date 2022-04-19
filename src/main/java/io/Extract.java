@@ -1,5 +1,7 @@
 package io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.Settings;
 
 import java.io.BufferedReader;
@@ -17,6 +19,8 @@ public class Extract {
 
     private static final int MAX_SUBS_EXTRACTION = Integer.MAX_VALUE;
     private static final String TEMP_FOLDER = "tmp";
+
+    private static final Logger log = LoggerFactory.getLogger(Extract.class);
 
     public static void extract(Path path, int streamId, File out) throws IOException {
         boolean back = false;
@@ -42,6 +46,7 @@ public class Extract {
         String s = null;
 
         while ((s = stdInput.readLine()) != null) {
+            log.debug(s);
             if (s.equals("progress=continue")) {
                 if (back) {
                     System.out.print("/\r");
@@ -52,7 +57,7 @@ public class Extract {
             }
         }
         while ((s = stdError.readLine()) != null) {
-            System.out.println(s);
+            log.error(s);
         }
     }
 
@@ -63,7 +68,9 @@ public class Extract {
         Files.createDirectories(Paths.get(subsFolder));
         File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
-        ArrayList<String> cmdList = new ArrayList<>(Arrays.asList(ffmpeg + " -loglevel 8 -progress pipe:1 -y -i".split(" ")));
+        ArrayList<String> cmdList = new ArrayList<>();
+        cmdList.add(ffmpeg);
+        cmdList.addAll(Arrays.asList("-loglevel 8 -progress pipe:1 -y -i".split(" ")));
         cmdList.add(path.toString());
 
         for (int i = 0; i < result.length; i++) {
@@ -80,6 +87,7 @@ public class Extract {
         BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
         String s;
         while ((s = stdInput.readLine()) != null) {
+            log.debug(s);
             if (s.equals("progress=continue")) {
                 if (back) {
                     System.out.print("/\r");
@@ -90,7 +98,7 @@ public class Extract {
             }
         }
         while ((s = stdError.readLine()) != null) {
-            System.out.println(s);
+            log.error(s);
         }
         return result;
     }
@@ -115,10 +123,11 @@ public class Extract {
         String s = null;
         LinkedList<FfprobeResult> liste = new LinkedList<>();
         while ((s = stdError.readLine()) != null) {
-            System.out.println(s);
+            log.error(s);
         }
         s = null;
         while ((s = stdInput.readLine()) != null) {
+            log.debug(s);
             if (s.matches("[0-9]+,.*")) {
                 String[] spl = s.split(",");
                 liste.add(new FfprobeResult(Integer.parseInt(spl[0]), spl[1]));
