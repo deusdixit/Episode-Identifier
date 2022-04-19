@@ -279,12 +279,13 @@ public class IdentifyTabController {
                 RenamePreviewWrapper rpw = renameList.getSelectionModel().getSelectedItem();
                 try {
                     int streamid = Extract.getSubtitleIds(rpw.getRenameItem().getValue().toPath())[0].streamID;
-                    Extract.extract(rpw.getRenameItem().getValue().toPath(), streamid, new File("/tmp/test.sup"));
+                    String tmpfile = System.getProperty("java.io.tmpdir") + File.separator + "test.sup";
+                    Extract.extract(rpw.getRenameItem().getValue().toPath(), streamid, new File(tmpfile));
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Save timeline");
                     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
                     File file = fileChooser.showSaveDialog(mainStage);
-                    Sup tsub = new Sup(Paths.get("/tmp/test.sup"));
+                    Sup tsub = new Sup(Paths.get(tmpfile));
                     Drawing.draw(tsub.getTimeMask(), file);
                 } catch (IOException e) {
                     e.printStackTrace();
