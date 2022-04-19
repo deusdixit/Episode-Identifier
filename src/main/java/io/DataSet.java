@@ -1,15 +1,21 @@
 package io;
 
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class DataSet implements Serializable {
     @Serial
     private static final long serialVersionUID = 4480600303123781401L;
+
+    private transient List<ChangeListener<Item>> listener;
 
     private ArrayList<Item> items;
 
@@ -19,6 +25,7 @@ public class DataSet implements Serializable {
 
     public void add(Item i) {
         items.add(i);
+        listener.forEach(x -> x.changed(new SimpleObjectProperty<>(i), null, i));
     }
 
     public int length() {
@@ -78,6 +85,13 @@ public class DataSet implements Serializable {
         }
         Collections.sort(result);
         return result;
+    }
+
+    public void addChangeListener(ChangeListener<Item> change) {
+        if (listener == null) {
+            listener = new ArrayList<>();
+        }
+        listener.add(change);
     }
 
 }

@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="800.0" prefWidth="600.0"
-          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="gui.controller.OpensubtitlesTabController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
@@ -72,7 +72,8 @@
                         <Insets right="20.0"/>
                     </GridPane.margin>
                 </Label>
-                <TextField fx:id="imdbField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <TextField fx:id="imdbField" onKeyTyped="#parentImdbChanged" GridPane.columnIndex="1"
+                           GridPane.rowIndex="1"/>
                 <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                        text="Parent Imdb ID :" GridPane.rowIndex="1">
                     <GridPane.margin>

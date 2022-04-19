@@ -7,6 +7,8 @@ import id.gasper.opensubtitles.models.features.FeatureQuery;
 import io.AttributesWrapper;
 import io.Item;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -78,6 +80,12 @@ public class DatabaseTabController {
 
     @FXML
     private void initialize() {
+        Database.getDatabase().addChangeListener(new ChangeListener<Item>() {
+            @Override
+            public void changed(ObservableValue<? extends Item> observableValue, Item item, Item t1) {
+                add(t1);
+            }
+        });
         fileIdColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getFileId())));
         imdbColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getImdbId())));
         seasonColumn.setCellValueFactory(item -> {
@@ -95,14 +103,9 @@ public class DatabaseTabController {
         yearColumn.setCellValueFactory(item -> {
             return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getYear())) : new SimpleStringProperty();
         });
-        try {
-            data = FXCollections.observableList(Database.getDatabase().get());
-        } catch (IOException e) {
-            log.error("IOException Database.getDatabase");
-        } catch (ClassNotFoundException e) {
-            log.error("ClassNotFoundException Database.getDatabase");
-        }
+        data = FXCollections.observableList(Database.getDatabase().get());
         osTable.setItems(data);
+
         ContextMenu cm = new ContextMenu();
         MenuItem mItem = new MenuItem("Export Timeline");
         MenuItem rItem = new MenuItem("Reload feature details");

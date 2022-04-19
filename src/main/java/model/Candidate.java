@@ -81,12 +81,8 @@ public class Candidate {
         } catch (NoOpensubtitlesException noe) {
             os = null;
         }
-        DataSet ds;
-        try {
-            ds = Database.getDatabase();
-        } catch (ClassNotFoundException cnfe) {
-            ds = null;
-        }
+        DataSet ds = Database.getDatabase();
+
         int imdbid = sim.getImdb();
         String filename = MovieFile.getName();
         String[] split = filename.split("\\.");

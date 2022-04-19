@@ -21,11 +21,11 @@ public class MainGui extends Application {
         Parent root = loader.load();
         controller = loader.getController();
         controller.setStage(stage);
-        Scene scene = new Scene(root, 700, 800);
+        Scene scene = new Scene(root, 1000, 800);
         scene.getStylesheets().add(getClass().getResource("/css/TextfieldError.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/css/bootstrap3.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/dracula.css").toExternalForm());
         stage.setMinHeight(600);
-        stage.setMinWidth(500);
+        stage.setMinWidth(800);
         stage.setScene(scene);
         stage.show();
     }
@@ -38,7 +38,7 @@ public class MainGui extends Application {
     public void stop() {
         if (controller != null) {
             try {
-                Database.saveDatabase(controller.getDB());
+                Database.saveDatabase(Database.getDatabase());
             } catch (IOException e) {
                 e.printStackTrace();
             }

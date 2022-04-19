@@ -27,14 +27,19 @@ public class Database {
 
     private static final Logger log = LoggerFactory.getLogger(Database.class);
 
-    public static DataSet getDatabase() throws IOException, ClassNotFoundException {
+    public static DataSet getDatabase() {
         if (ds != null) {
             return ds;
         }
         Path path = Paths.get(DEFAULT_DB_PATH);
         Path subdir = Paths.get(DEFAULT_SUB_PATH);
         if (path.toFile().exists()) {
-            ds = Dataloader.load(path);
+            try {
+                ds = Dataloader.load(path);
+            } catch (IOException | ClassNotFoundException ex) {
+                log.error("Couldn't load Database");
+                ds = new DataSet();
+            }
         } else {
             if (!subdir.toFile().exists()) {
                 subdir.toFile().mkdirs();

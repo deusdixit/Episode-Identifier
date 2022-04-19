@@ -4,6 +4,7 @@ import gui.exceptions.NoOpensubtitlesException;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.infos.UserResult;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -30,7 +31,7 @@ public class AccountDetails extends HBox {
         textLabel.setMaxHeight(Double.MAX_VALUE);
 
         textLabel.textProperty().bind(accountText);
-
+        HBox.setMargin(imgView, new Insets(0, 10, 0, 20));
         this.getChildren().add(imgView);
         this.getChildren().add(textLabel);
 

@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import model.Candidate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Database;
 import utils.Settings;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class IdentifyTask extends Task<Void> {
     protected Void call() throws Exception {
         int counter = 0;
         for (RenamePreviewWrapper rpItem : this.main.renameList.getItems()) {
-            Candidate can = new Candidate(rpItem.getRenameItem().getValue(), main.getDB());
+            Candidate can = new Candidate(rpItem.getRenameItem().getValue(), Database.getDatabase());
             try {
                 List<Similarity.SimResult> result = can.getCandidates();
                 List<PreviewListItem.ComboItem> combo = new ArrayList<>();

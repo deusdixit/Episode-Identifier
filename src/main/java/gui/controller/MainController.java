@@ -1,6 +1,5 @@
 package gui.controller;
 
-import io.DataSet;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
@@ -8,7 +7,6 @@ import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Database;
 
 import java.io.IOException;
 import java.net.URL;
@@ -62,18 +60,6 @@ public class MainController implements Initializable {
         mainTabPane.getSelectionModel().select(osTab);
         opensubtitlesTabController.usernameField.getStyleClass().add("error");
         opensubtitlesTabController.passwordField.getStyleClass().add("error");
-    }
-
-
-    public DataSet getDB() {
-        try {
-            return Database.getDatabase();
-        } catch (IOException ioe) {
-            log.error("IOException getDB()");
-        } catch (ClassNotFoundException cnfe) {
-            log.error("ClassNotFoundException getDB()");
-        }
-        return null;
     }
 
 

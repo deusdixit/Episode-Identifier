@@ -9,7 +9,6 @@ import gui.tasks.SeasonSearchTask;
 import id.gasper.opensubtitles.Opensubtitles;
 import id.gasper.opensubtitles.models.authentication.LoginResult;
 import id.gasper.opensubtitles.models.features.FeatureQuery;
-import io.DataSet;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,7 +23,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Database;
 import utils.OsApi;
 
 import java.io.IOException;
@@ -134,7 +132,20 @@ public class OpensubtitlesTabController {
 
     @FXML
     void searchFieldChanged(KeyEvent event) {
+        if (searchField.getText().length() > 0) {
+            searchBttn.setDisable(false);
+        } else {
+            searchBttn.setDisable(true);
+        }
+    }
 
+    @FXML
+    void parentImdbChanged(KeyEvent event) {
+        if (imdbField.getText().length() > 0 && imdbField.getText().matches("[0-9]+")) {
+            searchBttn.setDisable(false);
+        } else {
+            searchBttn.setDisable(true);
+        }
     }
 
     public void setDisableDownloadButtons(boolean value) {
@@ -147,17 +158,6 @@ public class OpensubtitlesTabController {
         prefs = Preferences.userRoot().node(getClass().getName());
         usernameField.setText(prefs.get("username", ""));
         passwordField.setText(prefs.get("password", ""));
-    }
-
-    public DataSet getDB() {
-        try {
-            return Database.getDatabase();
-        } catch (IOException ioe) {
-            log.error("IOException getDB()");
-        } catch (ClassNotFoundException cnfe) {
-            log.error("ClassNotFoundException getDB()");
-        }
-        return null;
     }
 
     private void download(TreeItem<TreeItemWrapper> item) {
@@ -180,6 +180,7 @@ public class OpensubtitlesTabController {
     @FXML
     public void initialize() {
         setPreferences();
+        searchBttn.setDisable(true);
         allButtons = new LinkedList<>();
         dataTTview.setShowRoot(false);
         ttRoot = new TreeItem<>();

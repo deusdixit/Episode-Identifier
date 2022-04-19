@@ -6,7 +6,6 @@ import gui.models.ListFactoryItem;
 import gui.models.RenameItem;
 import gui.models.RenamePreviewWrapper;
 import gui.tasks.IdentifyTask;
-import io.DataSet;
 import io.Extract;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -26,7 +25,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import subtitles.sup.Sup;
-import utils.Database;
 import utils.Drawing;
 import utils.Settings;
 
@@ -70,16 +68,6 @@ public class IdentifyTabController {
         mainStage = s;
     }
 
-    public DataSet getDB() {
-        try {
-            return Database.getDatabase();
-        } catch (IOException ioe) {
-            log.error("IOException getDB()");
-        } catch (ClassNotFoundException cnfe) {
-            log.error("ClassNotFoundException getDB()");
-        }
-        return null;
-    }
 
     @FXML
     void anaAction(ActionEvent event) {
@@ -163,7 +151,7 @@ public class IdentifyTabController {
     void renameAction(ActionEvent event) {
         if (renameList.getItems().size() != previewList.getItems().size()) {
             log.error("RenameList doesn't match PreviewList");
-        } else {
+        } else if (isRenameListValid()) {
             // Rename all files to distinct temporary file names to prevent data loss
             File[] tmpFiles = new File[renameList.getItems().size()];
             int tmpId = ThreadLocalRandom.current().nextInt();
@@ -188,7 +176,23 @@ public class IdentifyTabController {
             }
             renameList.getItems().clear();
             previewList.getItems().clear();
+        } else {
+            log.error("One or more files share the same suggested rename filename");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "One or more files share the same suggested rename filename", ButtonType.OK);
+            alert.show();
         }
+    }
+
+    public boolean isRenameListValid() {
+        HashSet<String> container = new HashSet<>();
+        for (RenamePreviewWrapper rpw : renameList.getItems()) {
+            if (container.contains(rpw.getRenameItem().getValue().getAbsolutePath())) {
+                return false;
+            } else {
+                container.add(rpw.getRenameItem().getValue().getAbsolutePath());
+            }
+        }
+        return true;
     }
 
     @FXML
@@ -272,7 +276,6 @@ public class IdentifyTabController {
         renameList.setContextMenu(cm);
         mItem.setOnAction((event) -> {
             if (renameList.getSelectionModel().getSelectedItems().size() > 0) {
-
                 RenamePreviewWrapper rpw = renameList.getSelectionModel().getSelectedItem();
                 try {
                     int streamid = Extract.getSubtitleIds(rpw.getRenameItem().getValue().toPath())[0].streamID;
