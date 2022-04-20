@@ -29,6 +29,9 @@ public class MainController implements Initializable {
     private OpensubtitlesTabController opensubtitlesTabController;
 
     @FXML
+    private SettingsController settingsController;
+
+    @FXML
     private TabPane mainTabPane;
 
     @FXML
@@ -54,6 +57,10 @@ public class MainController implements Initializable {
 
     public void setStage(Stage stage) {
         mainStage = stage;
+    }
+
+    public Stage getStage() {
+        return mainStage;
     }
 
     public void showOpensubtitles() {

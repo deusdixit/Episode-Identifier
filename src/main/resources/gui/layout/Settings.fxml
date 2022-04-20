@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane maxHeight="200.0" maxWidth="400.0" minHeight="200.0" minWidth="400.0" prefHeight="200.0" prefWidth="400.0"
-          xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18"
+          xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="gui.controller.SettingsController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" prefWidth="150.0"/>
@@ -23,8 +23,8 @@
         <Label alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                text="Keep Temporary Files: " GridPane.rowIndex="2"/>
         <CheckBox fx:id="tempFilesCheckBox" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-        <Button fx:id="ffmpegSelectButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..."
-                GridPane.columnIndex="2">
+        <Button fx:id="ffmpegSelectButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                onAction="#ffmpegButtonAction" text="..." GridPane.columnIndex="2">
             <GridPane.margin>
                 <Insets right="10.0"/>
             </GridPane.margin>
@@ -32,8 +32,8 @@
         <Label alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" text="ffprobe Path: " GridPane.rowIndex="1"/>
         <TextField fx:id="ffprobeTextfield" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
                    GridPane.rowIndex="1"/>
-        <Button fx:id="selectFfprobeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="..."
-                GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <Button fx:id="selectFfprobeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                onAction="#ffprobeButtonAction" text="..." GridPane.columnIndex="2" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets right="10.0"/>
             </GridPane.margin>
