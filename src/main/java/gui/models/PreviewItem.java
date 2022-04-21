@@ -33,6 +33,10 @@ public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
 
     public String getSelectedFilename() {
-        return item.getComboBox().getSelectionModel().getSelectedItem().getFilename();
+        if (item.getComboBox() == null) {
+            return "";
+        } else {
+            return item.getComboBox().getSelectionModel().getSelectedItem().getFilename();
+        }
     }
 }
