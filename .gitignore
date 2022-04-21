@@ -5,3 +5,4 @@
 .attach_pid*
 /tmp/
 *.srt
+/target/maven-archiver/
