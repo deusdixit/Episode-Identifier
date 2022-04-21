@@ -32,7 +32,6 @@ public class Database {
             return ds;
         }
         Path path = Paths.get(DEFAULT_DB_PATH);
-        Path subdir = Paths.get(DEFAULT_SUB_PATH);
         if (path.toFile().exists()) {
             try {
                 ds = Dataloader.load(path);
@@ -41,10 +40,7 @@ public class Database {
                 ds = new DataSet();
             }
         } else {
-            if (!subdir.toFile().exists()) {
-                subdir.toFile().mkdirs();
-            }
-            ds = Dataloader.loadSrt(Paths.get(DEFAULT_SUB_PATH), true);
+            ds = new DataSet();
         }
         return ds;
     }
@@ -53,7 +49,7 @@ public class Database {
         loadSubtitles(Paths.get(DEFAULT_SUB_PATH));
     }
 
-    public static void loadSubtitles(Path path) throws IOException, ClassNotFoundException {
+    public static void loadSubtitles(Path path) {
         Dataloader.loadSrt(path, true, getDatabase());
     }
 

@@ -7,8 +7,6 @@ import id.gasper.opensubtitles.models.features.FeatureQuery;
 import io.AttributesWrapper;
 import io.Item;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 public class DatabaseTabController {
 
     private ObservableList<Item> data;
-
     @FXML
     private TableColumn<Item, String> fileIdColumn;
 
@@ -49,14 +46,12 @@ public class DatabaseTabController {
 
     @FXML
     private TableColumn<Item, String> yearColumn;
-
     @FXML
     private TableView<Item> osTable;
 
     private Stage mainStage;
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseTabController.class);
-
 
     public DatabaseTabController() {
 
@@ -80,29 +75,14 @@ public class DatabaseTabController {
 
     @FXML
     private void initialize() {
-        Database.getDatabase().addChangeListener(new ChangeListener<Item>() {
-            @Override
-            public void changed(ObservableValue<? extends Item> observableValue, Item item, Item t1) {
-                add(t1);
-            }
-        });
+        Database.getDatabase().addChangeListener((observableValue, item, t1) -> osTable.refresh());
         fileIdColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getFileId())));
         imdbColumn.setCellValueFactory(itemStringCellDataFeatures -> new SimpleStringProperty(String.valueOf(itemStringCellDataFeatures.getValue().getImdbId())));
-        seasonColumn.setCellValueFactory(item -> {
-            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getSeasonNumber())) : new SimpleStringProperty();
-        });
-        episodeColumn.setCellValueFactory(item -> {
-            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getEpisodeNumber())) : new SimpleStringProperty();
-        });
-        parentTitleColumn.setCellValueFactory(item -> {
-            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getParentTitle())) : new SimpleStringProperty();
-        });
-        tmbdColumn.setCellValueFactory(item -> {
-            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getTmbdId())) : new SimpleStringProperty();
-        });
-        yearColumn.setCellValueFactory(item -> {
-            return item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getYear())) : new SimpleStringProperty();
-        });
+        seasonColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getSeasonNumber())) : new SimpleStringProperty());
+        episodeColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getEpisodeNumber())) : new SimpleStringProperty());
+        parentTitleColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getParentTitle())) : new SimpleStringProperty());
+        tmbdColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getTmbdId())) : new SimpleStringProperty());
+        yearColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getYear())) : new SimpleStringProperty());
         data = FXCollections.observableList(Database.getDatabase().get());
         osTable.setItems(data);
 
