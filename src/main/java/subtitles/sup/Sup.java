@@ -1,6 +1,7 @@
 package subtitles.sup;
 
 import com.google.gson.Gson;
+import io.SubtitleFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import subtitles.Subtitle;
@@ -27,9 +28,9 @@ public class Sup extends Subtitle {
 
     private static final Logger log = LoggerFactory.getLogger(Sup.class);
 
-    public Sup(Path filePath) {
+    public Sup(SubtitleFile sFile) {
         try {
-            data = Files.readAllBytes(filePath);
+            data = Files.readAllBytes(sFile.toPath());
         } catch (IOException ioex) {
             log.error("IOException Sup(Path)");
         }
@@ -84,7 +85,6 @@ public class Sup extends Subtitle {
         Gson gson = new Gson();
 
         try {
-
             //String[] keys = allImages.keySet().toArray(new String[0]);
             File folder = new File(filename + "_images");
             if (!folder.exists()) {

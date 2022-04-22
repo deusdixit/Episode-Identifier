@@ -7,6 +7,7 @@ import gui.models.RenameItem;
 import gui.models.RenamePreviewWrapper;
 import gui.tasks.IdentifyTask;
 import io.Extract;
+import io.SubtitleFile;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -26,11 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import subtitles.sup.Sup;
 import utils.Drawing;
+import utils.Naming;
 import utils.Settings;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -38,37 +39,25 @@ public class IdentifyTabController {
 
     @FXML
     public ImageButton anaBttn;
-
     @FXML
     public ImageButton loadFilesBttn;
-
     @FXML
     private ListView<RenamePreviewWrapper> previewList;
-
     @FXML
     public TextField templateTextfield;
-
     @FXML
     private ProgressBar progressBar;
-
     @FXML
     public ImageButton renameBttn;
-
     @FXML
     public ImageButton infoBttn;
-
     @FXML
     public ListView<RenamePreviewWrapper> renameList;
-
     private Stage mainStage;
-
     private static final Logger log = LoggerFactory.getLogger(IdentifyTabController.class);
-
     public void setStage(Stage s) {
         mainStage = s;
     }
-
-
     @FXML
     void anaAction(ActionEvent event) {
         boolean ffp = Settings.getInstace().isFfprobeValid();
@@ -97,18 +86,34 @@ public class IdentifyTabController {
             alert.show();
         }
     }
-
     public void sortList() {
         Collections.sort(previewList.getItems(), new Comparator<RenamePreviewWrapper>() {
             @Override
             public int compare(RenamePreviewWrapper a, RenamePreviewWrapper b) {
-                return a.getPreviewItem().getSelectedFilename().compareTo(b.getPreviewItem().getSelectedFilename());
+                String filenameA = a.getPreviewItem().getSelectedFilename();
+                String filenameB = b.getPreviewItem().getSelectedFilename();
+                if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() != null) {
+                    return -1;
+                } else if (a.getPreviewItem().getValue().getComboBox() != null && b.getPreviewItem().getValue().getComboBox() == null) {
+                    return 1;
+                } else if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() == null) {
+                    return 0;
+                } else {
+                    if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() < 0.2) {
+                        return 1;
+                    } else if (a.getPreviewItem().getSelectedAccuracy() < 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
+                        return -1;
+                    } else if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
+                        return filenameA.compareTo(filenameB);
+                    } else {
+                        return 0;
+                    }
+                }
             }
         });
         renameList.refresh();
         previewList.refresh();
     }
-
     private void addFiles(List<File> files) {
         if (files != null && files.size() > 0) {
             for (File f : files) {
@@ -126,7 +131,6 @@ public class IdentifyTabController {
             }
         }
     }
-
     @FXML
     public void infoBttnAction() {
         TemplateInfo ti = new TemplateInfo();
@@ -134,7 +138,6 @@ public class IdentifyTabController {
         stage.setScene(new Scene(ti));
         stage.show();
     }
-
     @FXML
     void loadFilesAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -143,10 +146,6 @@ public class IdentifyTabController {
         List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
         addFiles(files);
     }
-
-    /*
-    FIX DATA LOSS BUG WITH RENAMING
-     */
     @FXML
     void renameAction(ActionEvent event) {
         if (renameList.getItems().size() != previewList.getItems().size()) {
@@ -183,18 +182,24 @@ public class IdentifyTabController {
         }
     }
 
+    @FXML
+    public void templateTextChanged() {
+        Settings.getInstace().putTemplate(templateTextfield.getText());
+        Naming.getInstance().fireOnChange();
+        previewList.refresh();
+    }
+
     public boolean isRenameListValid() {
         HashSet<String> container = new HashSet<>();
-        for (RenamePreviewWrapper rpw : renameList.getItems()) {
-            if (container.contains(rpw.getRenameItem().getValue().getAbsolutePath())) {
+        for (RenamePreviewWrapper rpw : previewList.getItems()) {
+            if (container.contains(rpw.getPreviewItem().getSelectedFilename())) {
                 return false;
             } else {
-                container.add(rpw.getRenameItem().getValue().getAbsolutePath());
+                container.add(rpw.getPreviewItem().getSelectedFilename());
             }
         }
         return true;
     }
-
     @FXML
     public void initialize() {
         previewList.setCellFactory(selectedCandidateListView -> new ListFactoryItem(false));
@@ -235,9 +240,9 @@ public class IdentifyTabController {
                     ScrollBar s = (ScrollBar) n;
                     switch (s.getOrientation()) {
                         case HORIZONTAL:
-                            for (ScrollBar x : horizontal) {
+/*                            for (ScrollBar x : horizontal) {
                                 x.valueProperty().bindBidirectional(s.valueProperty());
-                            }
+                            }*/
                             break;
                         case VERTICAL:
                             for (ScrollBar x : vertical) {
@@ -285,7 +290,7 @@ public class IdentifyTabController {
                     fileChooser.setTitle("Save timeline");
                     fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
                     File file = fileChooser.showSaveDialog(mainStage);
-                    Sup tsub = new Sup(Paths.get(tmpfile));
+                    Sup tsub = new Sup(new SubtitleFile(tmpfile, "", ""));
                     Drawing.draw(tsub.getTimeMask(), file);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -293,7 +298,7 @@ public class IdentifyTabController {
 
             }
         });
-
+        templateTextfield.setText(Settings.getInstace().getTemplate());
     }
 
 }

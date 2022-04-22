@@ -61,12 +61,12 @@ public class Extract {
         }
     }
 
-    public static File[] extractAll(Path path) throws IOException {
+    public static SubtitleFile[] extractAll(Path path) throws IOException {
         String ffmpeg = Settings.getInstace().getFfmpegPath();
         FfprobeResult[] subs = getSubtitleIds(path);
         String subsFolder = String.format("%s%s%s%s", TEMP_FOLDER, File.separator, path.getFileName().toString().replaceAll("\\.[^\\.]+$", ""), File.separator);
         Files.createDirectories(Paths.get(subsFolder));
-        File[] result = new File[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
+        SubtitleFile[] result = new SubtitleFile[Math.min(subs.length, MAX_SUBS_EXTRACTION)];
         boolean back = false;
         ArrayList<String> cmdList = new ArrayList<>();
         cmdList.add(ffmpeg);
@@ -80,7 +80,7 @@ public class Extract {
             cmdList.add("-c:s");
             cmdList.add("copy");
             cmdList.add(subDest);
-            result[i] = new File(subDest);
+            result[i] = new SubtitleFile(subDest, subs[i].language, subs[i].name);
         }
         Process proc = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()])).start();
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -112,7 +112,7 @@ public class Extract {
                 "-select_streams",
                 "s",
                 "-show_entries",
-                "stream=index,codec_name",
+                "stream=index,codec_name:stream_tags=language",
                 "-of",
                 "csv=p=0",
                 path.toString()
@@ -130,7 +130,7 @@ public class Extract {
             log.debug(s);
             if (s.matches("[0-9]+,.*")) {
                 String[] spl = s.split(",");
-                liste.add(new FfprobeResult(Integer.parseInt(spl[0]), spl[1]));
+                liste.add(new FfprobeResult(Integer.parseInt(spl[0]), spl[1], spl[2]));
             }
         }
         FfprobeResult[] result = new FfprobeResult[liste.size()];
@@ -145,10 +145,12 @@ public class Extract {
 
         public final int streamID;
         public final String name;
+        public final String language;
 
-        public FfprobeResult(int stream, String name) {
+        public FfprobeResult(int stream, String name, String language) {
             this.name = name;
             streamID = stream;
+            this.language = language;
         }
     }
 }

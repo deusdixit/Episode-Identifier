@@ -15,6 +15,7 @@ public class Settings {
     private final String FFPROBE_KEY = "ffprobe_path";
     private final String KEEP_TEMPORARY_KEY = "del_temp";
 
+    private final String TEMPLATE_KEY = "template";
     private final String OS;
 
     public static Settings getInstace() {
@@ -23,7 +24,6 @@ public class Settings {
         }
         return settings;
     }
-
     public Settings() {
         prefs = Preferences.userRoot().node(getClass().getName());
         OS = System.getProperty("os.name");
@@ -140,6 +140,14 @@ public class Settings {
         } catch (IOException ioe) {
             return false;
         }
+    }
+
+    public String getTemplate() {
+        return prefs.get(TEMPLATE_KEY, "{p}({y})-s{s}e{e}[[{tmdb-{t}}]]");
+    }
+
+    public void putTemplate(String temp) {
+        prefs.put(TEMPLATE_KEY, temp);
     }
 
 }

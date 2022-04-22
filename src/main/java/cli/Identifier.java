@@ -1,14 +1,7 @@
 package cli;
 
-import id.gasper.opensubtitles.Opensubtitles;
-import id.gasper.opensubtitles.models.authentication.LoginResult;
-import model.Candidate;
 import picocli.CommandLine;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "identify", description = "analyzes and tries to identify the episode files")
@@ -35,7 +28,7 @@ public class Identifier implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        Opensubtitles os = null;
+/*        Opensubtitles os = null;
         if (username != null && password != null && token != null) {
             os = new Opensubtitles(username, password, token);
             LoginResult lr = os.login();
@@ -66,7 +59,7 @@ public class Identifier implements Callable<Integer> {
                     }
                 }
             }
-        }
+        }*/
         return 0;
     }
 }

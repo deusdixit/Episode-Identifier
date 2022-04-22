@@ -76,6 +76,8 @@ public class OpensubtitlesTabController {
 
     private Preferences prefs;
 
+    private boolean downloadTaskRunning = false;
+
     private static final Logger log = LoggerFactory.getLogger(OpensubtitlesTabController.class);
 
     @FXML
@@ -149,9 +151,16 @@ public class OpensubtitlesTabController {
     }
 
     public void setDisableDownloadButtons(boolean value) {
-        for (ImageButton b : allButtons) {
-            b.setDisable(value);
+        log.debug("Set Button Disable : " + value);
+        downloadTaskRunning = value;
+        ImageButton imgb;
+        int counter = 0;
+        while ((imgb = downloadTTColumn.getCellData(counter)) != null) {
+            imgb.setDisable(value);
+            counter++;
+            log.debug("Set " + value);
         }
+        dataTTview.refresh();
     }
 
     private void setPreferences() {
@@ -185,13 +194,11 @@ public class OpensubtitlesTabController {
         dataTTview.setShowRoot(false);
         ttRoot = new TreeItem<>();
         dataTTview.setRoot(ttRoot);
-
         itemTTColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
         downloadTTColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<TreeItemWrapper, ImageButton>, ObservableValue<ImageButton>>() {
             @Override
             public ObservableValue<ImageButton> call(TreeTableColumn.CellDataFeatures<TreeItemWrapper, ImageButton> item) {
                 ImageButton imgBttn = new ImageButton();
-
                 imgBttn.setImage(new Image(getClass().getResourceAsStream("/icons/download.png")), 20, 20);
                 imgBttn.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -203,6 +210,7 @@ public class OpensubtitlesTabController {
                     imgBttn.setVisible(false);
                     imgBttn.setDisable(true);
                 } else {
+                    imgBttn.setDisable(downloadTaskRunning);
                     allButtons.add(imgBttn);
                 }
                 return new SimpleObjectProperty<ImageButton>(imgBttn);

@@ -74,6 +74,11 @@ public class TreeItemWrapper {
     }
 
     public String getNumDb() {
+        try {
+            numDb = String.valueOf(Database.getDatabase().getByImdb(Integer.parseInt(imdb)).size());
+        } catch (Exception ex) {
+            numDb = "";
+        }
         return numDb;
     }
 

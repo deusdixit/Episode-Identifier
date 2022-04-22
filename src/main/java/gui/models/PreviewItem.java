@@ -11,6 +11,10 @@ public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
     @Override
     public PreviewListItem getValue() {
+        if (item != null && item.getComboBox() != null) {
+            item.getComboBox().getSelectionModel().clearSelection();
+            item.getComboBox().getSelectionModel().selectFirst();
+        }
         return item;
     }
 
@@ -29,6 +33,10 @@ public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
     public boolean isActive() {
         return item.isActive();
+    }
+
+    public double getSelectedAccuracy() {
+        return item.getComboBox().getSelectionModel().getSelectedItem().getSim().getAccuarcy();
     }
 
 
