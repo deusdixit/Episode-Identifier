@@ -29,9 +29,12 @@ public class Runner implements Callable<Integer> {
     @CommandLine.Option(names = {"-v", "--debug"}, description = "Debugging")
     private boolean debug = false;
 
+    public static boolean DEBUG_MODE = false;
+
     public Integer call() {
         if (debug) {
             System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+            DEBUG_MODE = true;
         }
         MainGui mw = new MainGui();
         mw.show();

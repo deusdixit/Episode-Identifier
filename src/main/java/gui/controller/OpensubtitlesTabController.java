@@ -118,6 +118,7 @@ public class OpensubtitlesTabController {
         try {
             if (isLoggedIn()) {
                 String value = searchField.getText();
+                ttRoot.getChildren().clear();
                 FeatureQuery fq = new FeatureQuery().setQuery(value);
                 fq.setType(FeatureQuery.Type.TVSHOW);
 

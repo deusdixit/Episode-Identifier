@@ -14,7 +14,6 @@ public class Settings {
     private final String FFMPEG_KEY = "ffmpeg_path";
     private final String FFPROBE_KEY = "ffprobe_path";
     private final String KEEP_TEMPORARY_KEY = "del_temp";
-
     private final String TEMPLATE_KEY = "template";
     private final String OS;
 

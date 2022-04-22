@@ -1,5 +1,6 @@
 package gui.controller;
 
+import cli.Runner;
 import gui.exceptions.NoOpensubtitlesException;
 import id.gasper.opensubtitles.models.features.Episode;
 import id.gasper.opensubtitles.models.features.Feature;
@@ -85,47 +86,48 @@ public class DatabaseTabController {
         yearColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getYear())) : new SimpleStringProperty());
         data = FXCollections.observableList(Database.getDatabase().get());
         osTable.setItems(data);
-
-        ContextMenu cm = new ContextMenu();
-        MenuItem mItem = new MenuItem("Export Timeline");
-        MenuItem rItem = new MenuItem("Reload feature details");
-        cm.getItems().add(mItem);
-        cm.getItems().add(rItem);
-        osTable.setContextMenu(cm);
-        mItem.setOnAction((event) -> {
-            if (osTable.getSelectionModel().getSelectedCells().size() > 0) {
-                TablePosition tp = osTable.getSelectionModel().getSelectedCells().get(0);
-                Item item = osTable.getItems().get(tp.getRow());
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save timeline");
-                fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
-                File file = fileChooser.showSaveDialog(mainStage);
-                Drawing.draw(item.getData(), file);
-            }
-        });
-        rItem.setOnAction((event) -> {
-            for (Item i : osTable.getItems()) {
-                if (i.getAttributeWrapper() != null && i.getAttributeWrapper().getTmbdId() > 0) {
-                    continue;
+        if (Runner.DEBUG_MODE) {
+            ContextMenu cm = new ContextMenu();
+            MenuItem mItem = new MenuItem("Export Timeline");
+            MenuItem rItem = new MenuItem("Reload feature details");
+            cm.getItems().add(mItem);
+            cm.getItems().add(rItem);
+            osTable.setContextMenu(cm);
+            mItem.setOnAction((event) -> {
+                if (osTable.getSelectionModel().getSelectedCells().size() > 0) {
+                    TablePosition tp = osTable.getSelectionModel().getSelectedCells().get(0);
+                    Item item = osTable.getItems().get(tp.getRow());
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Save timeline");
+                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                    File file = fileChooser.showSaveDialog(mainStage);
+                    Drawing.draw(item.getData(), file);
                 }
-                int imdb = i.getImdbId();
-                FeatureQuery fq = new FeatureQuery().setImdbId(imdb);
-                try {
-                    Feature[] fr = OsApi.getInstance().getFeatures(fq.build());
-                    if (fr.length > 0 && fr[0] instanceof Episode) {
-                        Episode e = (Episode) fr[0];
-                        AttributesWrapper aWrapper = new AttributesWrapper(e.attributes);
-                        i.setAttributeWrapper(aWrapper);
+            });
+            rItem.setOnAction((event) -> {
+                for (Item i : osTable.getItems()) {
+                    if (i.getAttributeWrapper() != null && i.getAttributeWrapper().getTmbdId() > 0) {
+                        continue;
                     }
-                } catch (NoOpensubtitlesException noe) {
-                    noe.getMainController().showOpensubtitles();
-                    break;
-                } catch (IOException | InterruptedException ie) {
-                    System.out.println(ie.getLocalizedMessage());
+                    int imdb = i.getImdbId();
+                    FeatureQuery fq = new FeatureQuery().setImdbId(imdb);
+                    try {
+                        Feature[] fr = OsApi.getInstance().getFeatures(fq.build());
+                        if (fr.length > 0 && fr[0] instanceof Episode) {
+                            Episode e = (Episode) fr[0];
+                            AttributesWrapper aWrapper = new AttributesWrapper(e.attributes);
+                            i.setAttributeWrapper(aWrapper);
+                        }
+                    } catch (NoOpensubtitlesException noe) {
+                        noe.getMainController().showOpensubtitles();
+                        break;
+                    } catch (IOException | InterruptedException ie) {
+                        System.out.println(ie.getLocalizedMessage());
+                    }
                 }
-            }
-            osTable.refresh();
-        });
+                osTable.refresh();
+            });
+        }
     }
 
 }

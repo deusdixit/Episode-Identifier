@@ -1,5 +1,6 @@
 package gui.controller;
 
+import cli.Runner;
 import gui.components.ImageButton;
 import gui.components.TemplateInfo;
 import gui.models.ListFactoryItem;
@@ -276,28 +277,39 @@ public class IdentifyTabController {
         renameBttn.setImage(new Image(getClass().getResourceAsStream("/icons/rename.png")), 50, 50);
         infoBttn.setImage(new Image(getClass().getResourceAsStream("/icons/info.png")), 20, 20);
         ContextMenu cm = new ContextMenu();
-        MenuItem mItem = new MenuItem("Export Timeline");
-        cm.getItems().add(mItem);
-        renameList.setContextMenu(cm);
-        mItem.setOnAction((event) -> {
-            if (renameList.getSelectionModel().getSelectedItems().size() > 0) {
-                RenamePreviewWrapper rpw = renameList.getSelectionModel().getSelectedItem();
-                try {
-                    int streamid = Extract.getSubtitleIds(rpw.getRenameItem().getValue().toPath())[0].streamID;
-                    String tmpfile = System.getProperty("java.io.tmpdir") + File.separator + "test.sup";
-                    Extract.extract(rpw.getRenameItem().getValue().toPath(), streamid, new File(tmpfile));
-                    FileChooser fileChooser = new FileChooser();
-                    fileChooser.setTitle("Save timeline");
-                    fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
-                    File file = fileChooser.showSaveDialog(mainStage);
-                    Sup tsub = new Sup(new SubtitleFile(tmpfile, "", ""));
-                    Drawing.draw(tsub.getTimeMask(), file);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
+        MenuItem removeItem = new MenuItem("Remove");
+        if (Runner.DEBUG_MODE) {
+            MenuItem mItem = new MenuItem("Export Timeline");
+            cm.getItems().add(mItem);
+            mItem.setOnAction((event) -> {
+                if (renameList.getSelectionModel().getSelectedItems().size() > 0) {
+                    RenamePreviewWrapper rpw = renameList.getSelectionModel().getSelectedItem();
+                    try {
+                        int streamid = Extract.getSubtitleIds(rpw.getRenameItem().getValue().toPath())[0].streamID;
+                        String tmpfile = System.getProperty("java.io.tmpdir") + File.separator + "test.sup";
+                        Extract.extract(rpw.getRenameItem().getValue().toPath(), streamid, new File(tmpfile));
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Save timeline");
+                        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PNG", "*.png"));
+                        File file = fileChooser.showSaveDialog(mainStage);
+                        Sup tsub = new Sup(new SubtitleFile(tmpfile, "", ""));
+                        Drawing.draw(tsub.getTimeMask(), file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        }
+        cm.getItems().add(removeItem);
+        removeItem.setOnAction((event) -> {
+            if (renameList.getSelectionModel().getSelectedItems().size() > 0) {
+                renameList.getItems().remove(renameList.getSelectionModel().getSelectedItem());
             }
         });
+        renameList.setContextMenu(cm);
+
         templateTextfield.setText(Settings.getInstace().getTemplate());
     }
 
