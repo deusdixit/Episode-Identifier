@@ -2,8 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root maxHeight="300.0" maxWidth="300.0" minHeight="300.0" minWidth="300.0" prefHeight="300.0" prefWidth="300.0"
-         type="GridPane" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root gridLinesVisible="true" maxHeight="300.0" maxWidth="400.0" minHeight="300.0" minWidth="400.0"
+         prefHeight="300.0" prefWidth="400.0" type="GridPane" xmlns="http://javafx.com/javafx/18"
+         xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
     </columnConstraints>
@@ -29,5 +30,7 @@
                text="{t} = Tmdb ID" GridPane.rowIndex="4"/>
         <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                text="{i} = Imdb ID" GridPane.rowIndex="5"/>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="[[text {?}]] = &quot;text {?}&quot; if {?} exists else &quot;&quot;" GridPane.rowIndex="6"/>
     </children>
 </fx:root>

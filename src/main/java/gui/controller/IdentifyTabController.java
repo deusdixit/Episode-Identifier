@@ -193,10 +193,12 @@ public class IdentifyTabController {
     public boolean isRenameListValid() {
         HashSet<String> container = new HashSet<>();
         for (RenamePreviewWrapper rpw : previewList.getItems()) {
-            if (container.contains(rpw.getPreviewItem().getSelectedFilename())) {
-                return false;
-            } else {
-                container.add(rpw.getPreviewItem().getSelectedFilename());
+            if (rpw.getPreviewItem().isActive()) {
+                if (container.contains(rpw.getPreviewItem().getSelectedFilename())) {
+                    return false;
+                } else {
+                    container.add(rpw.getPreviewItem().getSelectedFilename());
+                }
             }
         }
         return true;
