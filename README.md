@@ -13,7 +13,7 @@ https://user-images.githubusercontent.com/41428663/164988475-cc128593-f85b-4014-
 
 # Building
 ```
-mvn clean package
+mvn clean compile package
 ```
 
 # ToDo

@@ -4,7 +4,6 @@ package io;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class DataSet implements Serializable {
-    @Serial
+
     private static final long serialVersionUID = 4480600303123781401L;
 
     private transient List<ChangeListener<Item>> listener;
