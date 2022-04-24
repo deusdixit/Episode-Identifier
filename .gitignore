@@ -6,3 +6,4 @@
 /tmp/
 *.srt
 /target/maven-archiver/
+*.ser

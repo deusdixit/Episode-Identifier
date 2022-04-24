@@ -158,7 +158,7 @@ public class IdentifyTabController {
             for (int i = 0; i < renameList.getItems().size(); i++) {
                 if (renameList.getItems().get(i).isActive()) {
                     String tmpName = i + "-" + tmpId;
-                    tmpFiles[i] = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + "/" + tmpName);
+                    tmpFiles[i] = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + File.separator + tmpName);
                     renameList.getItems().get(i).getRenameItem().getValue().renameTo(tmpFiles[i]);
                 }
             }
@@ -166,7 +166,9 @@ public class IdentifyTabController {
             for (int i = 0; i < renameList.getItems().size(); i++) {
                 if (renameList.getItems().get(i).isActive()) {
                     File oldFile = tmpFiles[i];
-                    File newFile = new File(previewList.getItems().get(i).getPreviewItem().getSelectedFilename());
+                    int lIndex = renameList.getItems().get(i).getRenameItem().getValue().toString().lastIndexOf(".");
+                    String extension = renameList.getItems().get(i).getRenameItem().getValue().toString().substring(lIndex + 1);
+                    File newFile = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + File.separator + previewList.getItems().get(i).getPreviewItem().getSelectedFilename() + "." + extension);
                     if (oldFile.renameTo(newFile)) {
                         log.debug("Renamed " + oldFile.toString() + " to " + newFile.toString());
                     } else {

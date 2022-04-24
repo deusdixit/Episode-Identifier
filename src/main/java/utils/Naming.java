@@ -41,7 +41,8 @@ public class Naming {
                     {"\\{e}", String.format("%02d", item.getEpisodeNumber())},
                     {"\\{s}", String.format("%02d", item.getSeasonNumber())},
                     {"\\{t}", String.valueOf(item.getTmbdId())},
-                    {"\\{y}", String.valueOf(item.getYear())}};
+                    {"\\{y}", String.valueOf(item.getYear())},
+                    {"\\{i}", String.valueOf(item.getImdb())}};
             Matcher m = Pattern.compile("\\[\\[([^\\[]+)\\]\\]").matcher(pattern);
             while (m.find(0)) {
                 String match = m.group(1);

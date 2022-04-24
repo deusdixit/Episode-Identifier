@@ -14,6 +14,8 @@ public class AttributesWrapper implements Serializable {
     private String title;
     private int tmbdId;
 
+    private int imdb;
+
     private static final long serialVersionUID = 4480600303123781401L;
 
     public AttributesWrapper(Subtitle.FeatureDetails fd) {
@@ -23,6 +25,7 @@ public class AttributesWrapper implements Serializable {
         year = fd.year;
         title = fd.title;
         tmbdId = fd.tmdb_id;
+        this.imdb = fd.imdb_id;
     }
 
     public AttributesWrapper(Episode.Attributes fd) {
@@ -32,6 +35,7 @@ public class AttributesWrapper implements Serializable {
         year = Integer.parseInt(fd.year);
         title = fd.title;
         tmbdId = fd.tmdb_id;
+        imdb = fd.imdb_id;
     }
 
     public int getSeasonNumber() {
@@ -56,5 +60,9 @@ public class AttributesWrapper implements Serializable {
 
     public int getTmbdId() {
         return tmbdId;
+    }
+
+    public int getImdb() {
+        return imdb;
     }
 }
