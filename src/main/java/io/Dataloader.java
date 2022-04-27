@@ -1,11 +1,5 @@
 package io;
 
-import org.ebml.EBMLReader;
-import org.ebml.Element;
-import org.ebml.MasterElement;
-import org.ebml.ProtoType;
-import org.ebml.io.FileDataSource;
-import org.ebml.matroska.MatroskaDocTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import subtitles.text.TextSubtitle;
@@ -78,24 +72,6 @@ public class Dataloader {
             log.error(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        return null;
-    }
-
-    public static DataSet loadMkv(Path path) throws IOException {
-        FileDataSource fds = new FileDataSource(path.toString());
-        EBMLReader reader = new EBMLReader(fds);
-        Element el;
-        int counter = 0;
-        ProtoType<MasterElement> proto = MatroskaDocTypes.Audio;
-        System.out.println(proto.getName());
-        while (!proto.getName().equals((el = reader.readNextElement()).getElementType().getName())) {
-            System.out.println(el.getElementType().getName());
-            if (MatroskaDocTypes.EBML.getName().equals(el.getElementType().getName())) {
-                el.readData(fds);
-            }
-        }
-        System.out.println(counter);
-        System.out.println(proto.equals(el));
         return null;
     }
 

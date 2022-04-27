@@ -28,15 +28,20 @@ public class SettingsController {
     @FXML
     private Button selectFfprobeButton;
 
+    @FXML
+    private CheckBox textAnalysisCheckbox;
+
 
     @FXML
     public void initialize() {
         ffmpegTextfield.setText(Settings.getInstace().getFfmpegPath());
         tempFilesCheckBox.setSelected(Settings.getInstace().getKeepTemporary());
         ffprobeTextfield.setText(Settings.getInstace().getFfprobePath());
+        textAnalysisCheckbox.setSelected(Settings.getInstace().getTextAnalysis());
         tempFilesCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putKeepTemporary(newValue));
         ffmpegTextfield.textProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putFfmpegPath(newValue));
         ffprobeTextfield.textProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putFfprobePath(newValue));
+        textAnalysisCheckbox.selectedProperty().addListener((obs, oldItem, newItem) -> Settings.getInstace().putTextAnalysis(newItem));
     }
 
     @FXML

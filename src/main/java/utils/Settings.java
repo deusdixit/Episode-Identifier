@@ -15,6 +15,8 @@ public class Settings {
     private final String FFPROBE_KEY = "ffprobe_path";
     private final String KEEP_TEMPORARY_KEY = "del_temp";
     private final String TEMPLATE_KEY = "template";
+
+    private final String TEXT_ANALYSIS_KEY = "text_analysis";
     private final String OS;
 
     public static Settings getInstace() {
@@ -23,6 +25,7 @@ public class Settings {
         }
         return settings;
     }
+
     public Settings() {
         prefs = Preferences.userRoot().node(getClass().getName());
         OS = System.getProperty("os.name");
@@ -118,6 +121,14 @@ public class Settings {
             }
         }
         return prefs.get(FFPROBE_KEY, defaultValue);
+    }
+
+    public boolean getTextAnalysis() {
+        return prefs.getBoolean(TEXT_ANALYSIS_KEY, false);
+    }
+
+    public void putTextAnalysis(boolean value) {
+        prefs.putBoolean(TEXT_ANALYSIS_KEY, value);
     }
 
     public void putFfprobePath(String path) {
