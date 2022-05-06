@@ -5,33 +5,32 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableBooleanValue;
 
-import java.io.File;
 import java.util.List;
 
 public class RenamePreviewWrapper implements Observable, Comparable<RenamePreviewWrapper> {
 
-    private RenameItem renameItem;
-    private PreviewItem previewItem;
+    private final RenameItem renameItem;
+    private final PreviewItem previewItem;
     public boolean isSet = false;
 
-    public RenamePreviewWrapper(RenameItem rI, PreviewItem pI) {
+/*    public RenamePreviewWrapper(RenameItem rI, PreviewItem pI) {
         renameItem = rI;
         previewItem = pI;
-    }
+    }*/
 
     public RenamePreviewWrapper(RenameItem rI) {
         renameItem = rI;
         previewItem = new PreviewItem();
     }
 
-    public RenamePreviewWrapper(PreviewItem pI) {
+/*    public RenamePreviewWrapper(PreviewItem pI) {
         renameItem = new RenameItem();
         previewItem = pI;
-    }
+    }*/
 
-    public void setRenameItem(File rI) {
+/*    public void setRenameItem(File rI) {
         renameItem.setValue(rI);
-    }
+    }*/
 
     public void setPreviewItem(List<PreviewListItem.ComboItem> pI) {
         previewItem.setValue(pI);
