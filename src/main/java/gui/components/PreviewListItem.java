@@ -3,6 +3,7 @@ package gui.components;
 import hamming.Similarity;
 import io.AttributesWrapper;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -15,8 +16,7 @@ import java.util.List;
 public class PreviewListItem extends HBox {
 
     private ComboBox<ComboItem> item;
-    private CheckBox checkBoxItem;
-    private Label errorLabel;
+    private final CheckBox checkBoxItem;
 
 
     public PreviewListItem(List<ComboItem> sims) {
@@ -26,13 +26,9 @@ public class PreviewListItem extends HBox {
         if (sims.size() > 0) {
             initCombo(sims);
             this.getChildren().add(item);
-            if (item.getItems().size() > 0 && item.getSelectionModel().getSelectedItem().sim.getAccuarcy() < 0.2) {
-                checkBoxItem.setSelected(false);
-            } else {
-                checkBoxItem.setSelected(true);
-            }
+            checkBoxItem.setSelected(item.getItems().size() <= 0 || !(item.getSelectionModel().getSelectedItem().sim.getAccuarcy() < 0.2));
         } else {
-            errorLabel = new Label(" no subtitle found");
+            Label errorLabel = new Label(" no subtitle found");
             this.getChildren().add(errorLabel);
             checkBoxItem.setDisable(true);
         }
@@ -86,8 +82,8 @@ public class PreviewListItem extends HBox {
         return item;
     }
 
-    public boolean isActive() {
-        return checkBoxItem.isSelected();
+    public ObservableBooleanValue isActive() {
+        return checkBoxItem.selectedProperty();
     }
 
     public static class ComboItem {

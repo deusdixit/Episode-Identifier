@@ -3,6 +3,7 @@ package gui.models;
 import gui.components.PreviewListItem;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.value.ObservableBooleanValue;
 
 import java.io.File;
 import java.util.List;
@@ -39,11 +40,8 @@ public class RenamePreviewWrapper implements Observable, Comparable<RenamePrevie
         }
     }
 
-    public boolean isActive() {
-        if (isSet) {
-            return getPreviewItem().isActive();
-        }
-        return false;
+    public ObservableBooleanValue isActive() {
+        return getPreviewItem().isActive();
     }
 
     public RenameItem getRenameItem() {
