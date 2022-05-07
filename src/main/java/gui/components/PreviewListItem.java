@@ -12,6 +12,7 @@ import javafx.util.Callback;
 import utils.Naming;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PreviewListItem extends HBox {
 
@@ -41,21 +42,21 @@ public class PreviewListItem extends HBox {
         item.setMinHeight(25);
         item.setPrefHeight(25);
         HBox.setHgrow(item, Priority.SOMETIMES);
-        item.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ComboItem>() {
+        item.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends ComboItem> observableValue, ComboItem comboItem, ComboItem t1) {
                 item.getStylesheets().clear();
                 if (t1 != null && t1.sim.getAccuarcy() < 0.2) {
-                    item.getStylesheets().add(getClass().getResource("/css/ComboBoxItemSelectedRed.css").toExternalForm());
+                    item.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/ComboBoxItemSelectedRed.css")).toExternalForm());
                 } else if (t1 != null && t1.sim.getAccuarcy() >= 0.2) {
-                    item.getStylesheets().add(getClass().getResource("/css/ComboBoxItemSelectedGreen.css").toExternalForm());
+                    item.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/ComboBoxItemSelectedGreen.css")).toExternalForm());
                 }
             }
         });
-        item.setCellFactory(new Callback<ListView<ComboItem>, ListCell<ComboItem>>() {
+        item.setCellFactory(new Callback<>() {
             @Override
             public ListCell<ComboItem> call(ListView<ComboItem> comboItemListView) {
-                return new ListCell<ComboItem>() {
+                return new ListCell<>() {
                     @Override
                     protected void updateItem(ComboItem item, boolean empty) {
                         super.updateItem(item, empty);
@@ -64,9 +65,9 @@ public class PreviewListItem extends HBox {
                         } else {
                             this.getStylesheets().clear();
                             if (item.sim.getAccuarcy() < 0.2) {
-                                this.getStylesheets().add(getClass().getResource("/css/ComboBoxItemRed.css").toExternalForm());
+                                this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/ComboBoxItemRed.css")).toExternalForm());
                             } else {
-                                this.getStylesheets().add(getClass().getResource("/css/ComboBoxItemGreen.css").toExternalForm());
+                                this.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/ComboBoxItemGreen.css")).toExternalForm());
                             }
                             setText(item.toString());
                         }
@@ -88,7 +89,7 @@ public class PreviewListItem extends HBox {
 
     public static class ComboItem {
         private final Similarity.SimResult sim;
-        private AttributesWrapper aWrapper;
+        private final AttributesWrapper aWrapper;
 
         public ComboItem(Similarity.SimResult sim, AttributesWrapper aWrapper) {
             this.sim = sim;
@@ -99,9 +100,9 @@ public class PreviewListItem extends HBox {
             return sim;
         }
 
-        public void setAtrributesWrapper(AttributesWrapper aWrapper) {
+/*        public void setAtrributesWrapper(AttributesWrapper aWrapper) {
             this.aWrapper = aWrapper;
-        }
+        }*/
 
         public String getFilename() {
             if (aWrapper != null) {

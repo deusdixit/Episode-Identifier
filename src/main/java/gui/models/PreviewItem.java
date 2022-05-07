@@ -10,7 +10,7 @@ import java.util.List;
 public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
     private PreviewListItem item;
-    private SimpleBooleanProperty active = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty active = new SimpleBooleanProperty(false);
 
     @Override
     public PreviewListItem getValue() {
@@ -31,9 +31,9 @@ public class PreviewItem extends ObservableValueBase<PreviewListItem> {
         fireValueChangedEvent();
     }
 
-    public PreviewItem(List<PreviewListItem.ComboItem> sims) {
+/*    public PreviewItem(List<PreviewListItem.ComboItem> sims) {
         setValue(sims);
-    }
+    }*/
 
     public ObservableBooleanValue isActive() {
         return active;

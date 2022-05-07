@@ -37,12 +37,7 @@ public class IdentifyTask extends Task<Void> {
                     combo.add(new PreviewListItem.ComboItem(simResult, can.getAttributeWrapper(simResult)));
                 }
                 updateProgress(++counter, main.renameList.getItems().size());
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        rpItem.setPreviewItem(combo);
-                    }
-                });
+                Platform.runLater(() -> rpItem.setPreviewItem(combo));
                 if (!Settings.getInstace().getKeepTemporary()) {
                     can.deleteSubtitleFiles();
                 }

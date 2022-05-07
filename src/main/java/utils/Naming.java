@@ -1,20 +1,19 @@
 package utils;
 
 import io.AttributesWrapper;
-import io.Item;
-import javafx.beans.InvalidationListener;
 
-import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Naming {
 
     private static Naming instance = null;
+/*
     private final LinkedList<InvalidationListener> listener;
+*/
 
     public Naming() {
-        listener = new LinkedList<>();
+        //listener = new LinkedList<>();
     }
 
     public static Naming getInstance() {
@@ -25,14 +24,14 @@ public class Naming {
     }
 
     public void fireOnChange() {
-        for (InvalidationListener cl : listener) {
+/*        for (InvalidationListener cl : listener) {
             cl.invalidated(null);
-        }
+        }*/
     }
 
-    public String getName(Item item) {
+/*    public String getName(Item item) {
         return getName(item.getAttributeWrapper());
-    }
+    }*/
 
     public String getName(AttributesWrapper item) {
         String pattern = Settings.getInstace().getTemplate();
@@ -68,7 +67,7 @@ public class Naming {
         return pattern;
     }
 
-    public void addListener(InvalidationListener il) {
+/*    public void addListener(InvalidationListener il) {
         listener.add(il);
-    }
+    }*/
 }
