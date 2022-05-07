@@ -12,9 +12,9 @@ public class RenameItem extends ObservableValueBase<File> {
         this.file = file;
     }
 
-    public RenameItem() {
+/*    public RenameItem() {
         file = null;
-    }
+    }*/
 
     public void setValue(File f) {
         file = f;

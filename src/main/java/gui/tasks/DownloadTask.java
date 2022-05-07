@@ -27,12 +27,8 @@ public class DownloadTask extends Task<Void> {
                 try {
                     Database.downloadAutomatic(Integer.parseInt(tiw.getImdb()));
                     updateProgress(++counter, items.size());
-                } catch (IOException ioe) {
+                } catch (IOException | ClassNotFoundException | InterruptedException ioe) {
                     ioe.printStackTrace();
-                } catch (ClassNotFoundException cnfe) {
-                    cnfe.printStackTrace();
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
                 }
             }
         }

@@ -22,7 +22,6 @@ import utils.OsApi;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class DatabaseTabController {
 
@@ -66,9 +65,9 @@ public class DatabaseTabController {
         data.add(i);
     }
 
-    public void addAll(ArrayList<Item> arr) {
+/*    public void addAll(ArrayList<Item> arr) {
         data.addAll(arr);
-    }
+    }*/
 
     public void setStage(Stage mainStage) {
         this.mainStage = mainStage;
@@ -95,7 +94,7 @@ public class DatabaseTabController {
             osTable.setContextMenu(cm);
             mItem.setOnAction((event) -> {
                 if (osTable.getSelectionModel().getSelectedCells().size() > 0) {
-                    TablePosition tp = osTable.getSelectionModel().getSelectedCells().get(0);
+                    TablePosition<?, ?> tp = osTable.getSelectionModel().getSelectedCells().get(0);
                     Item item = osTable.getItems().get(tp.getRow());
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Save timeline");

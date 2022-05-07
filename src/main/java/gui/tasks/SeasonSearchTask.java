@@ -28,14 +28,11 @@ public class SeasonSearchTask extends Task<Void> {
         main.searchBttn.setDisable(true);
         FeatureQuery fq = new FeatureQuery().setQuery(query).setType(FeatureQuery.Type.TVSHOW);
         TvShow[] tvshows = Arrays.stream(os.getFeatures(fq.build())).map(i -> (TvShow) i).toArray(TvShow[]::new);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < tvshows.length; i++) {
-                    main.ttRoot.getChildren().add(new TvShowTreeItem(tvshows[i]));
-                }
-
+        Platform.runLater(() -> {
+            for (TvShow tvshow : tvshows) {
+                main.ttRoot.getChildren().add(new TvShowTreeItem(tvshow));
             }
+
         });
         main.searchBttn.setDisable(false);
         return null;

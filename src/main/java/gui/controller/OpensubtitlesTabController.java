@@ -12,14 +12,11 @@ import id.gasper.opensubtitles.models.features.FeatureQuery;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +24,10 @@ import utils.OsApi;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 public class OpensubtitlesTabController {
-
-    @FXML
-    private Button checkLoginBttn;
 
     @FXML
     public PasswordField passwordField;
@@ -72,7 +67,7 @@ public class OpensubtitlesTabController {
     @FXML
     public AccountDetails accountDetails;
 
-    private LinkedList<ImageButton> allButtons;
+    //private LinkedList<ImageButton> allButtons;
 
     private Preferences prefs;
 
@@ -114,7 +109,7 @@ public class OpensubtitlesTabController {
     }
 
     @FXML
-    public void searchBttnAction() throws IOException, InterruptedException {
+    public void searchBttnAction() {
         try {
             if (isLoggedIn()) {
                 String value = searchField.getText();
@@ -134,21 +129,13 @@ public class OpensubtitlesTabController {
     }
 
     @FXML
-    void searchFieldChanged(KeyEvent event) {
-        if (searchField.getText().length() > 0) {
-            searchBttn.setDisable(false);
-        } else {
-            searchBttn.setDisable(true);
-        }
+    void searchFieldChanged() {
+        searchBttn.setDisable(searchField.getText().length() <= 0);
     }
 
     @FXML
-    void parentImdbChanged(KeyEvent event) {
-        if (imdbField.getText().length() > 0 && imdbField.getText().matches("[0-9]+")) {
-            searchBttn.setDisable(false);
-        } else {
-            searchBttn.setDisable(true);
-        }
+    void parentImdbChanged() {
+        searchBttn.setDisable(imdbField.getText().length() <= 0 || !imdbField.getText().matches("\\d+"));
     }
 
     public void setDisableDownloadButtons(boolean value) {
@@ -191,40 +178,35 @@ public class OpensubtitlesTabController {
     public void initialize() {
         setPreferences();
         searchBttn.setDisable(true);
-        allButtons = new LinkedList<>();
+        //allButtons = new LinkedList<>();
         dataTTview.setShowRoot(false);
         ttRoot = new TreeItem<>();
         dataTTview.setRoot(ttRoot);
         itemTTColumn.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
-        downloadTTColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<TreeItemWrapper, ImageButton>, ObservableValue<ImageButton>>() {
+        downloadTTColumn.setCellValueFactory(new Callback<>() {
             @Override
             public ObservableValue<ImageButton> call(TreeTableColumn.CellDataFeatures<TreeItemWrapper, ImageButton> item) {
                 ImageButton imgBttn = new ImageButton();
-                imgBttn.setImage(new Image(getClass().getResourceAsStream("/icons/download.png")), 20, 20);
-                imgBttn.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        download(item.getValue());
-                    }
-                });
+                imgBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/download.png"))), 20, 20);
+                imgBttn.setOnAction(actionEvent -> download(item.getValue()));
                 if (item.getValue().getValue().type == TreeItemWrapper.Type.TVSHOW) {
                     imgBttn.setVisible(false);
                     imgBttn.setDisable(true);
                 } else {
                     imgBttn.setDisable(downloadTaskRunning);
-                    allButtons.add(imgBttn);
+                    //allButtons.add(imgBttn);
                 }
-                return new SimpleObjectProperty<ImageButton>(imgBttn);
+                return new SimpleObjectProperty<>(imgBttn);
             }
         });
 
-        dataTTview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<TreeItemWrapper>>() {
+        dataTTview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(ObservableValue<? extends TreeItem<TreeItemWrapper>> observableValue, TreeItem<TreeItemWrapper> oldItem, TreeItem<TreeItemWrapper> newItem) {
                 if (newItem.getValue().getImgUrl().length() > 0) {
                     thumbnail.setImage(new Image(newItem.getValue().getImgUrl()));
                 } else {
-                    thumbnail.setImage(new Image(getClass().getResourceAsStream("/icons/empty.png")));
+                    thumbnail.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/empty.png"))));
                 }
                 numDbLabel.setText(newItem.getValue().getNumDb());
                 imdbLabel.setText(newItem.getValue().getImdb());
@@ -232,7 +214,7 @@ public class OpensubtitlesTabController {
                 yearLabel.setText(newItem.getValue().getYear());
             }
         });
-        thumbnail.setImage(new Image(getClass().getResourceAsStream("/icons/empty.png")));
+        thumbnail.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/empty.png"))));
         usernameField.textProperty().addListener((event) -> usernameField.getStyleClass().remove("error"));
         passwordField.textProperty().addListener((event) -> passwordField.getStyleClass().remove("error"));
     }

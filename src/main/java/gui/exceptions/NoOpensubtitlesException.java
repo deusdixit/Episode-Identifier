@@ -4,7 +4,7 @@ import gui.controller.MainController;
 
 public class NoOpensubtitlesException extends Exception {
 
-    private MainController mainController;
+    private final MainController mainController;
 
     public NoOpensubtitlesException(MainController mc) {
         super();

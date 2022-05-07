@@ -6,13 +6,16 @@ import utils.Database;
 public class TreeItemWrapper {
 
     public enum Type {
-        TVSHOW, SEASON, EPISODE;
+        TVSHOW, SEASON, EPISODE
     }
 
-    private String name, title, year;
-    private String imdb, numDb;
+    private final String name;
+    private final String title;
+    private final String year;
+    private final String imdb;
+    private String numDb;
     private String imgUrl;
-    private int tmdb;
+    private final int tmdb;
     public Type type;
 
     public TreeItemWrapper(TvShow t) {
@@ -26,6 +29,7 @@ public class TreeItemWrapper {
         type = Type.TVSHOW;
     }
 
+/*
     public TreeItemWrapper(String name, String title, int imdb, int tmdb, int year, String imgUrl) {
         this.name = name;
         this.title = title;
@@ -40,6 +44,7 @@ public class TreeItemWrapper {
         this.tmdb = tmdb;
         type = Type.EPISODE;
     }
+*/
 
     public TreeItemWrapper(TvShow.Season s) {
         name = ("Season " + s.season_number);
