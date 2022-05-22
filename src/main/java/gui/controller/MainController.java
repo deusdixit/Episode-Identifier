@@ -34,15 +34,9 @@ public class MainController implements Initializable {
     @FXML
     private Tab osTab;
 
-//    private static final Logger log = LoggerFactory.getLogger(MainController.class);
-
 
     public MainController() {
     }
-
-/*    public MainController(Stage s) throws IOException {
-        mainStage = s;
-    }*/
 
     private static void setInstance(MainController mc) {
         instance = mc;

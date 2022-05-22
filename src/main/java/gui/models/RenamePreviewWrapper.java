@@ -13,24 +13,12 @@ public class RenamePreviewWrapper implements Observable, Comparable<RenamePrevie
     private final PreviewItem previewItem;
     public boolean isSet = false;
 
-/*    public RenamePreviewWrapper(RenameItem rI, PreviewItem pI) {
-        renameItem = rI;
-        previewItem = pI;
-    }*/
 
     public RenamePreviewWrapper(RenameItem rI) {
         renameItem = rI;
         previewItem = new PreviewItem();
     }
 
-/*    public RenamePreviewWrapper(PreviewItem pI) {
-        renameItem = new RenameItem();
-        previewItem = pI;
-    }*/
-
-/*    public void setRenameItem(File rI) {
-        renameItem.setValue(rI);
-    }*/
 
     public void setPreviewItem(List<PreviewListItem.ComboItem> pI) {
         previewItem.setValue(pI);

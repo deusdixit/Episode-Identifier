@@ -1,4 +1,4 @@
-package hamming;
+package utils;
 
 import io.DataSet;
 import io.Item;

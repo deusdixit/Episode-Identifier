@@ -1,6 +1,5 @@
 package gui.components;
 
-import hamming.Similarity;
 import io.AttributesWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
@@ -10,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import utils.Naming;
+import utils.Similarity;
 
 import java.util.List;
 import java.util.Objects;

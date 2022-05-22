@@ -29,22 +29,6 @@ public class TreeItemWrapper {
         type = Type.TVSHOW;
     }
 
-/*
-    public TreeItemWrapper(String name, String title, int imdb, int tmdb, int year, String imgUrl) {
-        this.name = name;
-        this.title = title;
-        this.imdb = String.valueOf(imdb);
-        try {
-            numDb = String.valueOf(Database.getDatabase().getByImdb(imdb).size());
-        } catch (Exception ex) {
-            numDb = "";
-        }
-        this.year = String.valueOf(year);
-        this.imgUrl = imgUrl;
-        this.tmdb = tmdb;
-        type = Type.EPISODE;
-    }
-*/
 
     public TreeItemWrapper(TvShow.Season s) {
         name = ("Season " + s.season_number);

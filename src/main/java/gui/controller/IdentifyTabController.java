@@ -265,7 +265,6 @@ public class IdentifyTabController {
         renameBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/rename.png"))), 50, 50);
         infoBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/info.png"))), 20, 20);
         ContextMenu cm = new ContextMenu();
-
         MenuItem removeItem = new MenuItem("Remove");
         if (Runner.DEBUG_MODE) {
             MenuItem mItem = new MenuItem("Export Timeline");
@@ -297,7 +296,6 @@ public class IdentifyTabController {
             }
         });
         renameList.setContextMenu(cm);
-
         templateTextfield.setText(Settings.getInstace().getTemplate());
         renameBttn.disableProperty().bind(Bindings.createBooleanBinding(() -> !isRenameListValid(previewList.getItems()), previewList.getItems()).or(BooleanBinding.booleanExpression(taskRunning)));
     }

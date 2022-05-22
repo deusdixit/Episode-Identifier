@@ -3,7 +3,6 @@ package gui.tasks;
 import gui.components.PreviewListItem;
 import gui.controller.IdentifyTabController;
 import gui.models.RenamePreviewWrapper;
-import hamming.Similarity;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import model.Candidate;
@@ -11,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Database;
 import utils.Settings;
+import utils.Similarity;
 
 import java.util.ArrayList;
 import java.util.List;
