@@ -3,6 +3,7 @@
 - JDK 11 or above
 - FFMPEG
 - FFPROBE
+- Account on [Opensubtitles.com](https://www.opensubtitles.com/)
 
 # Usage
 
@@ -12,7 +13,6 @@
 - Load files and click on the identify button
 - Check if the result makes sense.
 - Rename the files
-- Account on [Opensubtitles.com](https://www.opensubtitles.com/)
 
 # Video example
 
