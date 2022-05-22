@@ -5,9 +5,9 @@ import java.util.BitSet;
 
 public class Item implements Comparable<Item>, Serializable {
 
-    private int imdbId;
-    private BitSet data;
-    private int fileId;
+    private final int imdbId;
+    private final BitSet data;
+    private final int fileId;
     private AttributesWrapper aWrapper;
     private static final long serialVersionUID = 4480600303123781401L;
 

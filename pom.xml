@@ -25,9 +25,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.deusdixit</groupId>
-            <artifactId>jebml</artifactId>
-            <version>v.1.0.1</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -103,6 +110,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <finalName>EpisodeIdentifier</finalName>
                             <archive>
                                 <manifest>
                                     <mainClass>base.Main</mainClass>
@@ -115,7 +123,16 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
         </plugins>
     </build>
 

@@ -1,3 +1,9 @@
+# Requirements
+
+- JDK 11 or above
+- FFMPEG
+- FFPROBE
+
 # Usage
 
 ## Workflow

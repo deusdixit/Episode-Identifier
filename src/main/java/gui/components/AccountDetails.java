@@ -12,13 +12,13 @@ import javafx.scene.layout.HBox;
 import utils.OsApi;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class AccountDetails extends HBox {
 
-    private ImageView imgView;
-    private Label textLabel;
-    private SimpleStringProperty accountText;
+    private final ImageView imgView;
+    private final SimpleStringProperty accountText;
 
     public AccountDetails() {
         accountText = new SimpleStringProperty();
@@ -26,7 +26,7 @@ public class AccountDetails extends HBox {
         imgView.setFitHeight(20);
         imgView.setFitWidth(20);
 
-        textLabel = new Label("");
+        Label textLabel = new Label("");
         textLabel.setMaxWidth(Double.MAX_VALUE);
         textLabel.setMaxHeight(Double.MAX_VALUE);
 
@@ -39,7 +39,7 @@ public class AccountDetails extends HBox {
 
     public void set(LoginResult lr) {
         if (lr.status == 200) {
-            imgView.setImage(new Image(getClass().getResourceAsStream("/icons/green_checkmark.png")));
+            imgView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/green_checkmark.png"))));
             try {
                 UserResult ur = OsApi.getInstance().getUserInfo();
                 accountText.set("Remaining downloads : " + ur.data.remaining_downloads + "/" + ur.data.allowed_downloads);
@@ -51,7 +51,7 @@ public class AccountDetails extends HBox {
             }
 
         } else {
-            imgView.setImage(new Image(getClass().getResourceAsStream("/icons/red_checkmark.png")));
+            imgView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/red_checkmark.png"))));
             accountText.set(lr.status + " Error");
         }
     }

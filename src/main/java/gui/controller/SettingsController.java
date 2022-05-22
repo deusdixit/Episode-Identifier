@@ -1,8 +1,6 @@
 package gui.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -14,9 +12,6 @@ public class SettingsController {
 
 
     @FXML
-    private Button ffmpegSelectButton;
-
-    @FXML
     private TextField ffmpegTextfield;
 
     @FXML
@@ -26,7 +21,7 @@ public class SettingsController {
     private TextField ffprobeTextfield;
 
     @FXML
-    private Button selectFfprobeButton;
+    private CheckBox textAnalysisCheckbox;
 
 
     @FXML
@@ -34,13 +29,15 @@ public class SettingsController {
         ffmpegTextfield.setText(Settings.getInstace().getFfmpegPath());
         tempFilesCheckBox.setSelected(Settings.getInstace().getKeepTemporary());
         ffprobeTextfield.setText(Settings.getInstace().getFfprobePath());
+        textAnalysisCheckbox.setSelected(Settings.getInstace().getTextAnalysis());
         tempFilesCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putKeepTemporary(newValue));
         ffmpegTextfield.textProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putFfmpegPath(newValue));
         ffprobeTextfield.textProperty().addListener((obs, oldValue, newValue) -> Settings.getInstace().putFfprobePath(newValue));
+        textAnalysisCheckbox.selectedProperty().addListener((obs, oldItem, newItem) -> Settings.getInstace().putTextAnalysis(newItem));
     }
 
     @FXML
-    void ffmpegButtonAction(ActionEvent event) {
+    void ffmpegButtonAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("FFMPEG Executable", "*", "*"), new FileChooser.ExtensionFilter("All Files", "*.*"));
@@ -51,7 +48,7 @@ public class SettingsController {
     }
 
     @FXML
-    void ffprobeButtonAction(ActionEvent event) {
+    void ffprobeButtonAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("FFPROBE Executable", "*", "*"), new FileChooser.ExtensionFilter("All Files", "*.*"));

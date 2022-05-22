@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import utils.Database;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainGui extends Application {
 
@@ -22,8 +23,8 @@ public class MainGui extends Application {
         controller = loader.getController();
         controller.setStage(stage);
         Scene scene = new Scene(root, 1000, 800);
-        scene.getStylesheets().add(getClass().getResource("/css/TextfieldError.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/css/dracula.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/TextfieldError.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/dracula.css")).toExternalForm());
         stage.setMinHeight(600);
         stage.setMinWidth(800);
         stage.setScene(scene);

@@ -22,7 +22,6 @@ import utils.OsApi;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class DatabaseTabController {
 
@@ -66,10 +65,6 @@ public class DatabaseTabController {
         data.add(i);
     }
 
-    public void addAll(ArrayList<Item> arr) {
-        data.addAll(arr);
-    }
-
     public void setStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
@@ -86,6 +81,8 @@ public class DatabaseTabController {
         yearColumn.setCellValueFactory(item -> item.getValue().getAttributeWrapper() != null ? new SimpleStringProperty(String.valueOf(item.getValue().getAttributeWrapper().getYear())) : new SimpleStringProperty());
         data = FXCollections.observableList(Database.getDatabase().get());
         osTable.setItems(data);
+
+        // ONLY FOR DEBUGGING
         if (Runner.DEBUG_MODE) {
             ContextMenu cm = new ContextMenu();
             MenuItem mItem = new MenuItem("Export Timeline");
@@ -95,7 +92,7 @@ public class DatabaseTabController {
             osTable.setContextMenu(cm);
             mItem.setOnAction((event) -> {
                 if (osTable.getSelectionModel().getSelectedCells().size() > 0) {
-                    TablePosition tp = osTable.getSelectionModel().getSelectedCells().get(0);
+                    TablePosition<?, ?> tp = osTable.getSelectionModel().getSelectedCells().get(0);
                     Item item = osTable.getItems().get(tp.getRow());
                     FileChooser fileChooser = new FileChooser();
                     fileChooser.setTitle("Save timeline");

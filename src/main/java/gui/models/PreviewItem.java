@@ -1,6 +1,8 @@
 package gui.models;
 
 import gui.components.PreviewListItem;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValueBase;
 
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.List;
 public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
     private PreviewListItem item;
+    private final SimpleBooleanProperty active = new SimpleBooleanProperty(false);
 
     @Override
     public PreviewListItem getValue() {
@@ -24,15 +27,16 @@ public class PreviewItem extends ObservableValueBase<PreviewListItem> {
 
     public void setValue(List<PreviewListItem.ComboItem> sims) {
         item = new PreviewListItem(sims);
+        active.bind(item.isActive());
         fireValueChangedEvent();
     }
 
-    public PreviewItem(List<PreviewListItem.ComboItem> sims) {
+/*    public PreviewItem(List<PreviewListItem.ComboItem> sims) {
         setValue(sims);
-    }
+    }*/
 
-    public boolean isActive() {
-        return item.isActive();
+    public ObservableBooleanValue isActive() {
+        return active;
     }
 
     public double getSelectedAccuracy() {

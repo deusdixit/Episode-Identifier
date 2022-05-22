@@ -9,13 +9,15 @@ import gui.models.RenamePreviewWrapper;
 import gui.tasks.IdentifyTask;
 import io.Extract;
 import io.SubtitleFile;
-import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -55,24 +57,30 @@ public class IdentifyTabController {
     @FXML
     public ListView<RenamePreviewWrapper> renameList;
     private Stage mainStage;
+
+    private final SimpleBooleanProperty taskRunning = new SimpleBooleanProperty(false);
     private static final Logger log = LoggerFactory.getLogger(IdentifyTabController.class);
+
     public void setStage(Stage s) {
         mainStage = s;
     }
+
     @FXML
-    void anaAction(ActionEvent event) {
+    void anaAction() {
         boolean ffp = Settings.getInstace().isFfprobeValid();
         boolean ffm = Settings.getInstace().isFfmpegValid();
         if (ffm && ffp) {
             anaBttn.setDisable(true);
             loadFilesBttn.setDisable(true);
-            renameBttn.setDisable(true);
             IdentifyTask task = new IdentifyTask(this);
+            taskRunning.set(true);
             task.setOnSucceeded((e) -> {
                 sortList();
+                taskRunning.set(false);
             });
             Thread identTask = new Thread(task);
             progressBar.progressProperty().bind(task.progressProperty());
+
             identTask.setDaemon(true);
             identTask.start();
         } else {
@@ -88,27 +96,24 @@ public class IdentifyTabController {
         }
     }
     public void sortList() {
-        Collections.sort(previewList.getItems(), new Comparator<RenamePreviewWrapper>() {
-            @Override
-            public int compare(RenamePreviewWrapper a, RenamePreviewWrapper b) {
-                String filenameA = a.getPreviewItem().getSelectedFilename();
-                String filenameB = b.getPreviewItem().getSelectedFilename();
-                if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() != null) {
-                    return -1;
-                } else if (a.getPreviewItem().getValue().getComboBox() != null && b.getPreviewItem().getValue().getComboBox() == null) {
+        previewList.getItems().sort((a, b) -> {
+            String filenameA = a.getPreviewItem().getSelectedFilename();
+            String filenameB = b.getPreviewItem().getSelectedFilename();
+            if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() != null) {
+                return -1;
+            } else if (a.getPreviewItem().getValue().getComboBox() != null && b.getPreviewItem().getValue().getComboBox() == null) {
+                return 1;
+            } else if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() == null) {
+                return 0;
+            } else {
+                if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() < 0.2) {
                     return 1;
-                } else if (a.getPreviewItem().getValue().getComboBox() == null && b.getPreviewItem().getValue().getComboBox() == null) {
-                    return 0;
+                } else if (a.getPreviewItem().getSelectedAccuracy() < 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
+                    return -1;
+                } else if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
+                    return filenameA.compareTo(filenameB);
                 } else {
-                    if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() < 0.2) {
-                        return 1;
-                    } else if (a.getPreviewItem().getSelectedAccuracy() < 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
-                        return -1;
-                    } else if (a.getPreviewItem().getSelectedAccuracy() >= 0.2 && b.getPreviewItem().getSelectedAccuracy() >= 0.2) {
-                        return filenameA.compareTo(filenameB);
-                    } else {
-                        return 0;
-                    }
+                    return 0;
                 }
             }
         });
@@ -119,12 +124,9 @@ public class IdentifyTabController {
         if (files != null && files.size() > 0) {
             for (File f : files) {
                 RenamePreviewWrapper rpW = new RenamePreviewWrapper(new RenameItem(f));
-                rpW.addListener(new InvalidationListener() {
-                    @Override
-                    public void invalidated(Observable observable) {
-                        renameList.refresh();
-                        previewList.refresh();
-                    }
+                rpW.addListener(observable -> {
+                    renameList.refresh();
+                    previewList.refresh();
                 });
                 if (!renameList.getItems().contains(rpW)) {
                     renameList.getItems().add(rpW);
@@ -132,6 +134,7 @@ public class IdentifyTabController {
             }
         }
     }
+
     @FXML
     public void infoBttnAction() {
         TemplateInfo ti = new TemplateInfo();
@@ -139,40 +142,45 @@ public class IdentifyTabController {
         stage.setScene(new Scene(ti));
         stage.show();
     }
+
     @FXML
-    void loadFilesAction(ActionEvent event) {
+    void loadFilesAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Video Files", "*.mkv", "*.mp4", "*.avi", "*.MKV", "*.MP4", "*.AVI"), new FileChooser.ExtensionFilter("All Files", "*.*"));
         List<File> files = fileChooser.showOpenMultipleDialog(mainStage);
         addFiles(files);
     }
+
     @FXML
-    void renameAction(ActionEvent event) {
+    void renameAction() {
         if (renameList.getItems().size() != previewList.getItems().size()) {
             log.error("RenameList doesn't match PreviewList");
-        } else if (isRenameListValid()) {
+        } else if (isRenameListValid(renameList.getItems())) {
             // Rename all files to distinct temporary file names to prevent data loss
             File[] tmpFiles = new File[renameList.getItems().size()];
             int tmpId = ThreadLocalRandom.current().nextInt();
             for (int i = 0; i < renameList.getItems().size(); i++) {
-                if (renameList.getItems().get(i).isActive()) {
+                if (renameList.getItems().get(i).isActive().get()) {
                     String tmpName = i + "-" + tmpId;
                     tmpFiles[i] = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + File.separator + tmpName);
-                    renameList.getItems().get(i).getRenameItem().getValue().renameTo(tmpFiles[i]);
+                    boolean success = renameList.getItems().get(i).getRenameItem().getValue().renameTo(tmpFiles[i]);
+                    if (!success) {
+                        log.error("Couldn't rename file " + renameList.getItems().get(i).getRenameItem().getValue().toString() + " to " + tmpFiles[i].toString());
+                    }
                 }
             }
             // Rename the files with temporary filenames to the suggested filenames
             for (int i = 0; i < renameList.getItems().size(); i++) {
-                if (renameList.getItems().get(i).isActive()) {
+                if (renameList.getItems().get(i).isActive().get()) {
                     File oldFile = tmpFiles[i];
                     int lIndex = renameList.getItems().get(i).getRenameItem().getValue().toString().lastIndexOf(".");
                     String extension = renameList.getItems().get(i).getRenameItem().getValue().toString().substring(lIndex + 1);
                     File newFile = new File(renameList.getItems().get(i).getRenameItem().getValue().getParent() + File.separator + previewList.getItems().get(i).getPreviewItem().getSelectedFilename() + "." + extension);
                     if (oldFile.renameTo(newFile)) {
-                        log.debug("Renamed " + oldFile.toString() + " to " + newFile.toString());
+                        log.debug("Renamed " + oldFile + " to " + newFile);
                     } else {
-                        log.error("Renaming file " + oldFile.toString() + " to " + newFile.toString() + " failed");
+                        log.error("Renaming file " + oldFile + " to " + newFile + " failed");
                     }
                 }
             }
@@ -184,7 +192,6 @@ public class IdentifyTabController {
             alert.show();
         }
     }
-
     @FXML
     public void templateTextChanged() {
         Settings.getInstace().putTemplate(templateTextfield.getText());
@@ -192,10 +199,10 @@ public class IdentifyTabController {
         previewList.refresh();
     }
 
-    public boolean isRenameListValid() {
+    public boolean isRenameListValid(ObservableList<RenamePreviewWrapper> list) {
         HashSet<String> container = new HashSet<>();
-        for (RenamePreviewWrapper rpw : previewList.getItems()) {
-            if (rpw.getPreviewItem().isActive()) {
+        for (RenamePreviewWrapper rpw : list) {
+            if (rpw.getPreviewItem().isActive().get()) {
                 if (container.contains(rpw.getPreviewItem().getSelectedFilename())) {
                     return false;
                 } else {
@@ -203,59 +210,36 @@ public class IdentifyTabController {
                 }
             }
         }
-        return true;
+        return container.size() > 0;
     }
     @FXML
     public void initialize() {
         previewList.setCellFactory(selectedCandidateListView -> new ListFactoryItem(false));
         renameList.setCellFactory(renamePreviewWrapperListView -> new ListFactoryItem(true));
-        ObservableList<RenamePreviewWrapper> rpList = FXCollections.observableList(new ArrayList<>());
+        ObservableList<RenamePreviewWrapper> rpList = FXCollections.observableList(new ArrayList<>(), renamePreviewWrapper -> new Observable[]{renamePreviewWrapper.isActive()});
         renameList.setItems(rpList);
         previewList.setItems(rpList);
         renameList.setFixedCellSize(25);
         renameList.getItems().addListener((ListChangeListener<RenamePreviewWrapper>) change -> {
             anaBttn.setDisable(renameList.getItems().size() <= 0);
-            boolean isDone = previewList.getItems().size() > 0;
-            for (RenamePreviewWrapper rpW : previewList.getItems()) {
-                if (!rpW.isSet) {
-                    isDone = false;
-                    break;
-                }
-            }
-            renameBttn.setDisable(!isDone);
             Set<Node> nodes = renameList.lookupAll(".scroll-bar");
             Set<Node> nodes2 = previewList.lookupAll(".scroll-bar");
-            LinkedList<ScrollBar> horizontal = new LinkedList<>();
             LinkedList<ScrollBar> vertical = new LinkedList<>();
             for (Node n : nodes) {
                 if (n instanceof ScrollBar) {
                     ScrollBar s = (ScrollBar) n;
-                    switch (s.getOrientation()) {
-                        case HORIZONTAL:
-                            horizontal.add(s);
-                            break;
-                        case VERTICAL:
-                            vertical.add(s);
-                            break;
+                    if (s.getOrientation() == Orientation.VERTICAL) {
+                        vertical.add(s);
                     }
                 }
             }
             for (Node n : nodes2) {
                 if (n instanceof ScrollBar) {
                     ScrollBar s = (ScrollBar) n;
-                    switch (s.getOrientation()) {
-                        case HORIZONTAL:
-/*                            for (ScrollBar x : horizontal) {
-                                x.valueProperty().bindBidirectional(s.valueProperty());
-                            }*/
-                            break;
-                        case VERTICAL:
-                            for (ScrollBar x : vertical) {
-                                x.valueProperty().bindBidirectional(s.valueProperty());
-                            }
-                            break;
-                        default:
-                            break;
+                    if (s.getOrientation() == Orientation.VERTICAL) {
+                        for (ScrollBar x : vertical) {
+                            x.valueProperty().bindBidirectional(s.valueProperty());
+                        }
                     }
                 }
             }
@@ -276,12 +260,11 @@ public class IdentifyTabController {
             dragEvent.setDropCompleted(true);
             dragEvent.consume();
         });
-        loadFilesBttn.setImage(new Image(getClass().getResourceAsStream("/icons/cross.png")), 50, 50);
-        anaBttn.setImage(new Image(getClass().getResourceAsStream("/icons/ana.png")), 50, 50);
-        renameBttn.setImage(new Image(getClass().getResourceAsStream("/icons/rename.png")), 50, 50);
-        infoBttn.setImage(new Image(getClass().getResourceAsStream("/icons/info.png")), 20, 20);
+        loadFilesBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/cross.png"))), 50, 50);
+        anaBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/ana.png"))), 50, 50);
+        renameBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/rename.png"))), 50, 50);
+        infoBttn.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/info.png"))), 20, 20);
         ContextMenu cm = new ContextMenu();
-
         MenuItem removeItem = new MenuItem("Remove");
         if (Runner.DEBUG_MODE) {
             MenuItem mItem = new MenuItem("Export Timeline");
@@ -313,8 +296,8 @@ public class IdentifyTabController {
             }
         });
         renameList.setContextMenu(cm);
-
         templateTextfield.setText(Settings.getInstace().getTemplate());
+        renameBttn.disableProperty().bind(Bindings.createBooleanBinding(() -> !isRenameListValid(previewList.getItems()), previewList.getItems()).or(BooleanBinding.booleanExpression(taskRunning)));
     }
 
 }
