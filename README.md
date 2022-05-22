@@ -3,6 +3,7 @@
 - JDK 11 or above
 - FFMPEG
 - FFPROBE
+- Account on [Opensubtitles.com](https://www.opensubtitles.com/)
 
 # Usage
 
